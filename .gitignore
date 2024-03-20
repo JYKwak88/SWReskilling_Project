@@ -1,0 +1,8 @@
+*.o
+*.bin
+*.elf
+*.map
+__dump*
+.gitconfig
+.bash_history
+.viminfo
