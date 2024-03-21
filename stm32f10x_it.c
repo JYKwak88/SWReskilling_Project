@@ -412,10 +412,23 @@ void DMA1_Channel7_IRQHandler(void)
  * Output         : None
  * Return         : None
  *******************************************************************************/
+volatile int LIGHT_LEVEL = 0;
 volatile int NIGHT = 0;
 void ADC1_2_IRQHandler(void)
 {
-  Invalid_ISR();
+  LIGHT_LEVEL = ADC1->DR;
+  // Uart_Printf("LIGHT LEVEL = 0x%x\n\r", LIGHT_LEVEL);
+  if (NIGHT == 1 && LIGHT_LEVEL > 0xb00)
+  {
+    NIGHT = 0;
+  }
+  else if (NIGHT == 0 && LIGHT_LEVEL < 0x900)
+  {
+    NIGHT = 1;
+  }
+
+  Macro_Clear_Bit(ADC1->SR, 1);
+  NVIC_ClearPendingIRQ(ADC1_2_IRQn);
 }
 
 /*******************************************************************************
@@ -572,11 +585,12 @@ volatile int EMERGENCY = 0;
 volatile int DIRECTION = 0;
 volatile int BLINK_CNT = 0;
 volatile int NO_INPUT_CNT = 0;
-
+volatile int CDS_WAIT_CNT = 0;
 void TIM4_IRQHandler(void)
 {
   BLINK_CNT++;
-  if (BLINK_CNT > 250)
+  CDS_WAIT_CNT++;
+  if (BLINK_CNT > 500000/TIM4_UE_PERIOD)
   {
     if (EMERGENCY == 1)
     {
@@ -592,7 +606,7 @@ void TIM4_IRQHandler(void)
     }
     BLINK_CNT = 0;
   }
-  if (NO_INPUT_CNT > 350)
+  if (NO_INPUT_CNT > 700000/TIM4_UE_PERIOD)
   {
     Uart_Rx_In = 1;
     Uart_Rx_Data = 0;
@@ -601,6 +615,12 @@ void TIM4_IRQHandler(void)
 
 	Macro_Clear_Bit(TIM4->SR, 0);
 	NVIC_ClearPendingIRQ(TIM4_IRQn);
+
+  if (CDS_WAIT_CNT > 100000/TIM4_UE_PERIOD)
+  {
+    Macro_Set_Bit(ADC1->CR2, 22); 					// CDS Start (SW Trigger, EXTTRIG==1 일때만 됨)
+    CDS_WAIT_CNT = 0;
+  }
 }
 
 /*******************************************************************************

@@ -1,3 +1,5 @@
+#define DEV (1)     // 개발중 : 1, 실제구동 : 0
+
 #include "stm32f10x.h"
 #include "option.h"
 #include "macro.h"
@@ -11,13 +13,13 @@ extern volatile int STATUS;
 extern volatile int DIRECTION;
 extern volatile int SPEED;
 extern volatile int NIGHT;
+extern volatile int AUTO_LIGHT;
 extern volatile int EMERGENCY;
 extern volatile int BLINK_CNT;
 extern volatile int LIGHT_ON;
 extern volatile int NO_INPUT_CNT;
 // Uart.c
-// 개발중 Uart = 1, 실제구동 Uart = 3
-#define DEV (0)
+// 개발중 Uart1, 실제구동 Uart3
 #if DEV
 #define Uart_Init			Uart1_Init
 #define Uart_Send_Byte		Uart1_Send_Byte
@@ -73,14 +75,16 @@ extern void SysTick_Stop(void);
 extern void SysTick_OS_Tick(unsigned int msec);
 
 // Timer.c
-extern int TIM2_Check_Timeout(void);
-extern void TIM4_Repeat(void);
-extern int TIM4_Check_Timeout(void);
-
 
 // SysTick.c
 
 // motor.c
+#define TIM2_TICK         	(5) 				// usec
+#define TIM2_FREQ 	  		(1000000/TIM2_TICK)	// Hz
+#define TIM2_PLS_OF_10ms  	(10000/TIM2_TICK)
+#define TIM2_UE_PERIOD      (2000)              // usec : PWM주기
+#define TIM2_MAX	  		(0xffffu)
+
 extern void TIM2_Repeat(void);
 extern void Motor_Init(void);
 extern void Motor_Drive(int dir, int spd);
@@ -94,16 +98,29 @@ extern void ReverseLED_Off(void);
 extern void TailLED_Init(void);
 extern void TailLED_On(void);
 extern void TailLED_Release(void);
+
+#define TIM4_TICK         	(50) 			// usec
+#define TIM4_FREQ 	  		(1000000/TIM4_TICK)	// Hz
+#define TIM4_PLS_OF_10ms  	(10000/TIM4_TICK)
+#define TIM4_UE_PERIOD      (2000)              // usec : PWM주기
+#define TIM4_MAX	  		(0xffffu)
+
 extern void BlinkLED_Init(void);
 extern void BlinkLED_Control(void);
 
-extern void LED_Control(int spd);
+extern void LED_Control(void);
 
 
 // drivecar.c
+extern void Start_Message(void);
 extern void Print_State(void);
 
 extern void Forward_Car(void);
 extern void Back_Car(void);
 extern void Stop_Car(void);
 extern void Turn_Car(char input);
+
+// cds.c
+extern void CDS_Init(void);
+extern void CDS_Start(void);
+extern void CDS_Stop(void);

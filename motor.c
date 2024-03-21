@@ -1,10 +1,12 @@
-#include "device_driver.h"
+/*
+    TIM2 CH1~4 모두 모터 PWM 제어로 사용
+            CH1     CH2     CH3     CH4
+    Fwd     H       L       H       L
+    Rev     L       H       L       H
+    Stop    L       L       L       L
+*/
 
-#define TIM2_TICK         	(5) 				// usec
-#define TIM2_FREQ 	  		(1000000/TIM2_TICK)	// Hz
-#define TIM2_PLS_OF_10ms  	(10000/TIM2_TICK)
-#define TIM2_UE_PERIOD      (2000)              // usec : PWM주기
-#define TIM2_MAX	  		(0xffffu)
+#include "device_driver.h"
 
 void TIM2_Repeat(void)
 {

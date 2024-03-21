@@ -1,5 +1,20 @@
 #include "device_driver.h"
 
+void Start_Message(void)
+{
+    Uart_Printf("========== Engine Start ==========\n\r");
+    Uart_Printf("\n\r");
+    Uart_Printf("========== Move Control ==========\n\r");
+    Uart_Printf("[1]~[5]:select forward speed\n\r");
+    Uart_Printf("               |  [w]:go forward  |\n\r");
+    Uart_Printf("[a]:turn left  |  [s]:stop        |  [d]:turn right\n\r");
+    Uart_Printf("               |  [x]:go back     |\n\r");
+    Uart_Printf("========== Light Control =========\n\r");
+    Uart_Printf("[l]:toggle light  |  [o]:toggle auto light  |  [y]:emergency light\n\r");
+    Uart_Printf("\n\r");
+    Print_State();
+}
+
 void Print_State(void)
 {
     Uart_Printf("STATUS = %2d, DIRECTION = %2d, SPEED = %2d\n\r", STATUS, DIRECTION, SPEED);
@@ -15,7 +30,7 @@ void Forward_Car(void)
         for (delay = 0; delay < 50000; delay++);
     }
     Motor_Drive(DIRECTION, SPEED);
-	LED_Control(SPEED);
+	LED_Control();
     STATUS = 1;
     Print_State();
 }
@@ -27,7 +42,7 @@ void Back_Car(void)
     for (delay = 0; delay < 50000; delay++);
     SPEED = -1;
     Motor_Drive(DIRECTION, SPEED);
-    LED_Control(SPEED);
+    LED_Control();
     STATUS = -1;
     Print_State();
 }
@@ -36,7 +51,7 @@ void Stop_Car(void)
 {
     SPEED = 0;
     Motor_Drive(DIRECTION, SPEED);
-    LED_Control(SPEED);
+    LED_Control();
     STATUS = 0;
     Print_State();
 }

@@ -30,12 +30,6 @@ void HeadLED_Off(void) { Macro_Set_Bit(GPIOA->ODR, 4); }
 void ReverseLED_On(void) { Macro_Clear_Bit(GPIOA->ODR, 5); }
 void ReverseLED_Off(void) { Macro_Set_Bit(GPIOA->ODR, 5); }
 
-#define TIM4_TICK         	(50) 			// usec
-#define TIM4_FREQ 	  		(1000000/TIM4_TICK)	// Hz
-#define TIM4_PLS_OF_10ms  	(10000/TIM4_TICK)
-#define TIM4_UE_PERIOD      (2000)              // usec : PWM주기
-#define TIM4_MAX	  		(0xffffu)
-
 void TailLED_Init(void)
 {    
     // Tail(미등 구현)
@@ -84,25 +78,19 @@ void TailLED_On(void)
 }
 void TailLED_Release(void)
 {
-    if (NIGHT || LIGHT_ON)
-    {
-        TIM4->CCR2 = TIM4->ARR * 7 / 8;     // duty 12.5%
-    }
-    else
-    {
-        TIM4->CCR2 = TIM4->ARR;     // duty 0%
-    }
+    if (LIGHT_ON || (AUTO_LIGHT && NIGHT)) TIM4->CCR2 = TIM4->ARR * 7 / 8;     // duty 12.5%
+    else TIM4->CCR2 = TIM4->ARR;     // duty 0%
 }
 
-void LED_Control(int spd)
+void LED_Control(void)
 {
-    if (NIGHT || LIGHT_ON) HeadLED_On();  // Head는 테스트용임 - ADC로 바꿔야함
+    if (LIGHT_ON || (AUTO_LIGHT && NIGHT)) HeadLED_On();
     else HeadLED_Off();
 
-    if (spd == 0) TailLED_On();
+    if (SPEED == 0) TailLED_On();
     else TailLED_Release();
 
-    if (spd < 0) ReverseLED_On();
+    if (SPEED < 0) ReverseLED_On();
     else ReverseLED_Off();
 }
 

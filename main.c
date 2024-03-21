@@ -13,6 +13,7 @@ static void Sys_Init(void)
 volatile int SPEED;
 volatile int STATUS;
 volatile int LIGHT_ON = 0;
+volatile int AUTO_LIGHT = 1;
 
 void Main(void)
 {
@@ -26,62 +27,29 @@ void Main(void)
 	STATUS = idle;
 	DIRECTION = center;
 	SPEED = stop;
-	
+
 	Motor_Init();
 	H_R_LED_Init();
 	TailLED_Init();
-	LED_Control(SPEED);
-
-#if !(DEV)
-	Uart1_Printf("Press [s] key after connect to bluetooth COM Port\n\r");
-	while (Uart1_Rx_Data != 's');
-	Uart1_Rx_In = 0;
+	CDS_Init();
 	Uart3_Init(9600);
-	Uart1_Printf("Control via bluetooth COM port\n\r");
-#endif
+	LED_Control();
 
-	// int interlock0 = 1;
-	// int interlock1 = 1;
+#if (!DEV)
+	while (Uart_Rx_Data != 's')
+	{
+		Uart_Printf("Press [s] key if you see this messege...\r");
+		volatile int i;
+		for (i = 0; i < 1000000; i++);
+	}
+	Uart_Rx_In = 0;
+	Uart_Printf("\n\rControl via bluetooth COM port\n\r");
+		
+#endif
+	Start_Message();
 
 	for(;;)
 	{
-		/* 키 입력 받으면 방향, 속도 계속 유지 하는 방식*/
-		#if 0
-		if (Uart_Rx_In)
-		{
-			input = Uart_Rx_Data;
-			Uart_Rx_In = 0;
-			switch (input)
-			{
-			case '0': case 'x':
-				SPEED = stop; break;
-			case '1': case '2': case '3': case '4': case '5':
-				SPEED = (int)(input - '0'); break;
-			case 'w':
-				if (SPEED < 5) SPEED++; break;
-			case 's':
-				if (SPEED > -2) SPEED--; break;
-			case 'd':
-				if (DIRECTION < 1) DIRECTION++; break;
-			case 'a':
-				if (DIRECTION > -1) DIRECTION--; break;
-			case 'l': // test
-				LIGHT_ON ^= 1; Uart_Printf("LIGHT_ON = %d\n\r", LIGHT_ON); break;
-			case 'y': // test
-				EMERGENCY ^= 1; Uart_Printf("EMERGENCY = %d\n\r", EMERGENCY); break;
-			case 'n': // test
-				NIGHT ^= 1; Uart_Printf("NIGHT = %d\n\r", NIGHT); break;
-			default :
-				Uart_Printf("Wrong Input\n\r");
-			}
-			Uart_Printf("DIRECTION = %d, SPEED = %d\n\r", DIRECTION, SPEED);
-			Motor_Drive(DIRECTION, SPEED);
-			LED_Control(SPEED);
-			BlinkLED_Control();
-
-		}
-		#endif
-
 		/* 키 입력 눌리는 동안만 구동하는 방식을 하려고 했으나... */
 		/* 터미널프로그램은 동시입력 지원이 안되고, 키 릴리즈 이벤트를 보낼 수 없다
 		   때문에, 전진키, 후진키 한번으로 0번방향으로 출발하고, 중간에 단수 설정 가능하고
@@ -94,7 +62,7 @@ void Main(void)
 			input = Uart_Rx_Data;
 			Uart_Rx_In = 0;
 			if (input == 'a' || input == 'd') NO_INPUT_CNT = 1;
-			else NO_INPUT_CNT = 300;
+			else NO_INPUT_CNT = 600000/TIM4_UE_PERIOD;
 			if (input != pre_input) switch (input)
 			{
 			case 0:
@@ -128,43 +96,26 @@ void Main(void)
 				DIRECTION = 1;
 				Turn_Car(input);
 				break;
-			case 'l': // test
-				LIGHT_ON ^= 1; Uart_Printf("LIGHT_ON = %d\n\r", LIGHT_ON); LED_Control(SPEED); break;
+			case 'o':
+				AUTO_LIGHT ^= 1;
+				if (AUTO_LIGHT == 1) CDS_Start();
+				else if (AUTO_LIGHT == 0) CDS_Stop();
+				LED_Control();
+				// LCD 밝기 제어 추가 예정
+				break;
+			case 'l':
+				LIGHT_ON ^= 1; Uart_Printf("LIGHT_ON = %d\n\r", LIGHT_ON); LED_Control(); break;
+				// LCD 밝기 제어 추가 예정
 			case 'y': // test
 				EMERGENCY ^= 1; Uart_Printf("EMERGENCY = %d\n\r", EMERGENCY); BlinkLED_Control(); break;
-			case 'n': // test
-				NIGHT ^= 1; Uart_Printf("NIGHT = %d\n\r", NIGHT); LED_Control(SPEED); break;
 			default :
 				Uart_Printf("[%c] is Wrong Input\n\r", input);
 			}
 			pre_input = input;
 		}
 
+		LED_Control();
 
-#if 0
-		// key로 속도 조절 - test 용
-		Key_Poll_Init();
-		
-		if ((interlock0 != 0) && Macro_Check_Bit_Clear(GPIOB->IDR, 6))
-		{
-			if (SPEED < 5) SPEED++;
-			interlock0 = 0;
-		}
-		else if ((interlock0 == 0) && Macro_Check_Bit_Set(GPIOB->IDR, 6))
-		{
-			interlock0 = 1;
-		}
-
-		if ((interlock1 != 0) && Macro_Check_Bit_Clear(GPIOB->IDR, 7))
-		{
-			if (SPEED > 0) SPEED--;
-			interlock1 = 0;
-		}
-		else if ((interlock1 == 0) && Macro_Check_Bit_Set(GPIOB->IDR, 7))
-		{
-			interlock1 = 1;
-		}
-#endif
 	}
 
 }
