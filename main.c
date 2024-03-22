@@ -1,5 +1,5 @@
 #include "device_driver.h"
-
+#include "lcd.h"
 static void Sys_Init(void)
 {
 	Clock_Init();
@@ -34,7 +34,16 @@ void Main(void)
 	CDS_Init();
 	Uart3_Init(9600);
 	LED_Control();
-
+	
+	Uart_Printf("LCD Init step start\n\r");
+	LCD_Init();
+	Uart_Printf("LCD Init step end\n\r");
+	
+	for(;;) {
+	LCD_Clear(RED);
+	LCD_Clear(GREEN);
+	LCD_Clear(BLUE);
+	}
 #if (!DEV)
 	while (Uart_Rx_Data != 's')
 	{
@@ -62,59 +71,71 @@ void Main(void)
 			input = Uart_Rx_Data;
 			Uart_Rx_In = 0;
 			if (input == 'a' || input == 'd') NO_INPUT_CNT = 1;
-			else NO_INPUT_CNT = 600000/TIM4_UE_PERIOD;
-			if (input != pre_input) switch (input)
+			else
 			{
-			case 0:
 				NO_INPUT_CNT = -1;
 				DIRECTION = 0;
 				if (STATUS == 1) Forward_Car();
 				else if (STATUS == -1) Back_Car();
 				else if (STATUS == 0) Stop_Car();
-				BlinkLED_Control();
-				break;
-			case '0': case 's':
-				Stop_Car(); break;
-			case '1': case '2': case '3': case '4': case '5':
-				SPEED = (int)(input - '0');
-				if (STATUS == 1) Forward_Car();
-				else if (STATUS == -1) Stop_Car();
-				break;
-			case 'w':
-				if (STATUS == 0) Forward_Car();
-				else if (STATUS == -1) Stop_Car();
-				break;
-			case 'x':
-				if (STATUS == 1) Stop_Car();
-				else if (STATUS == 0) Back_Car();
-				break;
-			case 'a':
-				DIRECTION = -1;
-				Turn_Car(input);
-				break;
-			case 'd':
-				DIRECTION = 1;
-				Turn_Car(input);
-				break;
-			case 'o':
-				AUTO_LIGHT ^= 1;
-				if (AUTO_LIGHT == 1) CDS_Start();
-				else if (AUTO_LIGHT == 0) CDS_Stop();
+			}
+
+			if (input != pre_input)
+			{
+				switch (input)
+				{
+				case 0:
+					NO_INPUT_CNT = -1;
+					DIRECTION = 0;
+					if (STATUS == 1) Forward_Car();
+					else if (STATUS == -1) Back_Car();
+					else if (STATUS == 0) Stop_Car();
+					break;
+				case '0': case 's':
+					Stop_Car(); break;
+				case '1': case '2': case '3': case '4': case '5':
+					SPEED = (int)(input - '0');
+					if (STATUS == 1) Forward_Car();
+					else if (STATUS == -1) Stop_Car();
+					break;
+				case 'w':
+					if (STATUS == 0) Forward_Car();
+					else if (STATUS == -1) Stop_Car();
+					break;
+				case 'x':
+					if (STATUS == 1) Stop_Car();
+					else if (STATUS == 0) Back_Car();
+					break;
+				case 'a':
+					DIRECTION = -1;
+					Turn_Car(input);
+					break;
+				case 'd':
+					DIRECTION = 1;
+					Turn_Car(input);
+					break;
+				case 'o':
+					AUTO_LIGHT ^= 1;
+					if (AUTO_LIGHT == 1) CDS_Start();
+					else if (AUTO_LIGHT == 0) CDS_Stop();
+					LED_Control();
+					// LCD 밝기 제어 추가 예정
+					break;
+				case 'l':
+					LIGHT_ON ^= 1; Uart_Printf("LIGHT_ON = %d\n\r", LIGHT_ON); LED_Control(); break;
+					// LCD 밝기 제어 추가 예정
+				case 'y': // test
+					EMERGENCY ^= 1; Uart_Printf("EMERGENCY = %d\n\r", EMERGENCY); LED_Control(); break;
+				default :
+					Uart_Printf("[%c] is Wrong Input\n\r", input);
+				}
+				Print_State();
 				LED_Control();
-				// LCD 밝기 제어 추가 예정
-				break;
-			case 'l':
-				LIGHT_ON ^= 1; Uart_Printf("LIGHT_ON = %d\n\r", LIGHT_ON); LED_Control(); break;
-				// LCD 밝기 제어 추가 예정
-			case 'y': // test
-				EMERGENCY ^= 1; Uart_Printf("EMERGENCY = %d\n\r", EMERGENCY); BlinkLED_Control(); break;
-			default :
-				Uart_Printf("[%c] is Wrong Input\n\r", input);
+
 			}
 			pre_input = input;
 		}
 
-		LED_Control();
 
 	}
 

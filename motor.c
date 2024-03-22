@@ -1,9 +1,9 @@
 /*
-    TIM2 CH1~4 모두 모터 PWM 제어로 사용
-            CH1     CH2     CH3     CH4
-    Fwd     H       L       H       L
-    Rev     L       H       L       H
-    Stop    L       L       L       L
+// TIM2 CH1~4 모두 모터 PWM 제어로 사용
+//         CH1     CH2     CH3     CH4
+// Fwd     H       L       H       L
+// Rev     L       H       L       H
+// Stop    L       L       L       L
 */
 
 #include "device_driver.h"

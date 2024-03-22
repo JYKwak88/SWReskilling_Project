@@ -1,5 +1,3 @@
-#define DEV (1)     // 개발중 : 1, 실제구동 : 0
-
 #include "stm32f10x.h"
 #include "option.h"
 #include "macro.h"
@@ -67,16 +65,12 @@ extern int Key_Wait_Key_Pressed(void);
 extern void Key_ISR_Enable(int en);
 
 // SysTick.c
-extern void SysTick_Run(unsigned int msec);
-extern int SysTick_Check_Timeout(void);
-extern unsigned int SysTick_Get_Time(void);
-extern unsigned int SysTick_Get_Load_Time(void);
-extern void SysTick_Stop(void);
-extern void SysTick_OS_Tick(unsigned int msec);
+void SysTick_Delay_ms(unsigned int msec);
 
 // Timer.c
 
 // SysTick.c
+extern void SysTick_Delay_ms(unsigned int msec);
 
 // motor.c
 #define TIM2_TICK         	(5) 				// usec

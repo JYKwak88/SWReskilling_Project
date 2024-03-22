@@ -520,7 +520,8 @@ void TIM1_BRK_IRQHandler(void)
  *******************************************************************************/
 void TIM1_UP_IRQHandler(void)
 {
-  Invalid_ISR();
+  Macro_Clear_Bit(TIM1->SR, 0);
+  NVIC_ClearPendingIRQ(TIM1_UP_IRQn);
 }
 
 /*******************************************************************************
@@ -606,6 +607,7 @@ void TIM4_IRQHandler(void)
     }
     BLINK_CNT = 0;
   }
+
   if (NO_INPUT_CNT > 700000/TIM4_UE_PERIOD)
   {
     Uart_Rx_In = 1;

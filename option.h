@@ -1,3 +1,5 @@
+#define DEV (1)     // 개발중 : 1, 실제구동 : 0
+
 #define SYSCLK	72000000
 #define HCLK	SYSCLK
 #define PCLK2	HCLK
@@ -12,4 +14,3 @@
 #define STACK_LIMIT	(HEAP_LIMIT + 8)
 #define STACK_BASE	(RAM_END + 1)
 #define STACK_SIZE	(STACK_BASE - STACK_LIMIT)
-

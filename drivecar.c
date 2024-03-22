@@ -30,9 +30,7 @@ void Forward_Car(void)
         for (delay = 0; delay < 50000; delay++);
     }
     Motor_Drive(DIRECTION, SPEED);
-	LED_Control();
     STATUS = 1;
-    Print_State();
 }
 
 void Back_Car(void)
@@ -42,26 +40,20 @@ void Back_Car(void)
     for (delay = 0; delay < 50000; delay++);
     SPEED = -1;
     Motor_Drive(DIRECTION, SPEED);
-    LED_Control();
     STATUS = -1;
-    Print_State();
 }
 
 void Stop_Car(void)
 {
     SPEED = 0;
     Motor_Drive(DIRECTION, SPEED);
-    LED_Control();
     STATUS = 0;
-    Print_State();
 }
 
 void Turn_Car(char input)
 {
     if (input == 'a') Uart_Printf("TURN LEFT\n\r");
     else if (input == 'd') Uart_Printf("TURN RIGHT\n\r");
-	BlinkLED_Control();
-    Print_State();
     if (STATUS == 0) return;
     Motor_Drive(DIRECTION, SPEED);
 }

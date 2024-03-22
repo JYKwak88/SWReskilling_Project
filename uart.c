@@ -1,3 +1,8 @@
+/*
+// PC Wiring : UART1
+// BT Wirelsse : UART3
+*/
+
 #include "device_driver.h"
 #include <stdio.h>
 #include <stdarg.h>

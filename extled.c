@@ -1,11 +1,11 @@
 /*
-    External LED control
-    Low : On, High : Off
-    Head : PA4
-    Rear : PA5 (후진)
-    Tail : TIM4_CH2(PB7)
-    Left : TIM4_CH3(PB8)
-    Right : TIM4_CH4(PB9)
+// External LED control
+// Low : On, High : Off
+// Head : PA4
+// Rear : PA5 (후진)
+// Tail : TIM4_CH2(PB7)
+// Left : TIM4_CH3(PB8)
+// Right : TIM4_CH4(PB9)
 */
 #include "device_driver.h"
 
@@ -92,6 +92,8 @@ void LED_Control(void)
 
     if (SPEED < 0) ReverseLED_On();
     else ReverseLED_Off();
+
+    BlinkLED_Control();
 }
 
 void BlinkLED_Control(void)
