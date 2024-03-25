@@ -16,9 +16,9 @@ typedef struct
 
 extern _lcd_dev lcddev;
 
-#define USE_HORIZONTAL  0   //LCD 화면의 시계 방향 회전 방향 정의: 0-0도 회전, 1-90도 회전, 2-180도 회전, 3-270도 회전
-#define LCD_W 240
-#define LCD_H 320
+#define USE_HORIZONTAL  (1)   //LCD 화면의 시계 방향 회전 방향 정의: 0-0도 회전, 1-90도 회전, 2-180도 회전, 3-270도 회전
+#define LCD_W (240)
+#define LCD_H (320)
 
 //브러시 색상
 #define WHITE       0xFFFF
@@ -53,21 +53,14 @@ extern _lcd_dev lcddev;
 //함수
 void SPI2_Init(void);
 void LCD_GPIO_Init(void);
-
-#define TIM1_TICK         	(50) 				// usec
-#define TIM1_FREQ 	  		(1000000/TIM1_TICK)	// Hz
-#define TIM1_PLS_OF_10ms  	(10000/TIM1_TICK)
-#define TIM1_UE_PERIOD      (2000)              // usec : PWM주기
-#define TIM1_MAX	  		(0xffffu)
-
 void BLU_PWM_Init(void);
 
-#define LCD_RST_SET     GPIOA->BSRR=(1<<7)
-#define LCD_RST_CLR     GPIOA->BRR=(1<<7)
+#define LCD_RST_SET     GPIOA->BSRR=(1<<6)
+#define LCD_RST_CLR     GPIOA->BRR=(1<<6)
 #define LCD_CS_SET      GPIOB->BSRR=(1<<12)
 #define LCD_CS_CLR      GPIOB->BRR=(1<<12)
-#define LCD_RS_SET      GPIOA->BSRR=(1<<6)
-#define LCD_RS_CLR      GPIOA->BRR=(1<<6)
+#define LCD_RS_SET      GPIOA->BSRR=(1<<7)
+#define LCD_RS_CLR      GPIOA->BRR=(1<<7)
 
 void SPI2_Init(void);
 void LCD_GPIO_Init(void);

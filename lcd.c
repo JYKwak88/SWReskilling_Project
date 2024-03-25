@@ -5,11 +5,11 @@
 // SDI(MOSI)    SPI2_MOSI(PB15)
 // SDO(MISO)    SPI2_MISO(PB14)
 // CS           SPI2_NSS(PB12)
-// Back Light   TIM1_CH1(PA8)
-// DC/RS        PA6
-// RST          PA7
+// Back Light   TIM3_CH1(PB6)
+// DC/RS        PA7
+// RST          PA6
 **************************************************************************************************/	
-#define SPI2_BR_OP (4)
+#define SPI2_BR_OP (0)
 // SPI2_BR_OP   PCLK Dividing   Baud Rate(MHz)   (SPI2:APB1 => PCLK1 = 36MHz)
 // 0            2               18
 // 1            4               9
@@ -55,52 +55,23 @@ void SPI2_Init(void)
 
 void LCD_GPIO_Init(void)
 {
-// DC/RS        PA6
-// RST          PA7
+// DC/RS        PA7
+// RST          PA6
 	Macro_Set_Area(RCC->APB2ENR, 0x3, 2);       // PA PB Enable
-    Macro_Write_Block(GPIOA->CRL, 0xf, 0x3, 28);            // PA7 GPO P-P 50MHz
     Macro_Write_Block(GPIOA->CRL, 0xf, 0x3, 24);            // PA6 GPO P-P 50MHz
+    Macro_Write_Block(GPIOA->CRL, 0xf, 0x3, 28);            // PA7 GPO P-P 50MHz
     // Macro_Write_Block(GPIOB->CRL, 0xf, 0x3, 20);            // PB5 GPO P-P 50MHz
 }
 
 void BLU_PWM_Init(void)
 {
-    Macro_Set_Bit(RCC->APB2ENR, 11); // TIM1 EN
-	Macro_Set_Bit(RCC->APB2ENR, 2); // GPIOA EN
-	Macro_Set_Bit(RCC->APB2ENR, 0); // AFIO EN
-    Macro_Write_Block(GPIOA->CRH, 0xf, 0xa, 12);    // CH4(PA11), Output Compare Ch. Alternative function push-pull
-    // TIM1 CR1 설정: ARPE=0, down count, repeat mode
-	TIM1->CR1 = (0<<7)|(1<<4)|(0<<3);
-    // Timer 주파수가 TIM1_FREQ가 되도록 PSC 설정
-	TIM1->PSC = (unsigned int)((TIMXCLK/2)/(double)TIM1_FREQ + 0.5) - 1;
-    // PWM 주기 = TIM1_UE_PERIOD
-    TIM1->ARR = (TIM1_UE_PERIOD / TIM1_TICK) -1;
-    // 초기 출력은 duty 50% test단계에서. 나중에 적절히 조절
-    TIM1->CCR4 = TIM1->ARR / 2;
-    // OC1M : 110 (PWM1 mode)
-	// Macro_Write_Block(TIM1->CCMR1, 0x7, 0x6, 12);
-	// OC1PE : CCR preload enable
-    // Macro_Set_Bit(TIM1->CCMR1, 11);
-    // CC1S : output
-	// Macro_Write_Block(TIM1->CCMR1, 0x3, 0x0, 8);
-    Macro_Write_Block(TIM1->CCMR2, 0xff, 0x68, 8);
-    // OUT pin : active low, output enable
-	Macro_Write_Block(TIM1->CCER, 0x3, 0x3, 12);
-
-   	// UG 이벤트 발생 => TIM1->SR의 UIF bit가 1로 변경됨 (업데이트 발생함)
-	Macro_Set_Bit(TIM1->EGR,0);
-
-    // // TIM1->SR Timer Interrupt Pending Clear
-    // Macro_Set_Bit(TIM1->SR, 0);
-    // // NVIC Interrupt Pending Clear => NVIC용 Macro 사용
-    // NVIC_ClearPendingIRQ(TIM1_UP_IRQn);
-    // // TIM1->DIER TIM1 Interrupt Enable
-    // Macro_Set_Bit(TIM1->DIER, 0);
-    // // NVIC Interrupt Enable => NVIC용 Macro 사용
-    // NVIC_EnableIRQ(TIM1_UP_IRQn);
-
-	// TIM1 start
-	Macro_Set_Bit(TIM1->CR1, 0);
+    //extled.c 의 TailLED_Init()에서 TIM3 init
+    Macro_Write_Block(GPIOB->CRL, 0xf, 0xa, 24);
+    // 초기 출력(high)은 duty 100%
+    TIM4->CCR1 = TIM4->ARR;
+    // OUT pin : active high, output enable
+    Macro_Write_Block(TIM4->CCMR1, 0xff, 0x68, 0);
+	Macro_Write_Block(TIM4->CCER, 0x3, 0x1, 0);
 }
 
 void LCD_Reset(void)
@@ -129,9 +100,9 @@ void LCD_WR_DATA(u8 data)
 {
     LCD_CS_CLR;
     LCD_RS_SET;
-    SysTick_Delay_ms(20);
+    // SysTick_Delay_ms(20);
     SPI_WriteByte(data);
-    SysTick_Delay_ms(20);
+    // SysTick_Delay_ms(20);
     LCD_CS_SET;
 }
 
@@ -177,68 +148,61 @@ void LCD_Clear(u16 Color)
 
 void LCD_Init(void)
 {
-	Uart_Printf("SPI Init step start\n\r");
     SPI2_Init();
-	Uart_Printf("LCD GPIO Init step start\n\r");
     LCD_GPIO_Init();
-	Uart_Printf("BLU PWM Init step start\n\r");
     BLU_PWM_Init();
-	Uart_Printf("LCD RESET step start\n\r");
+
     LCD_Reset();
 
-	Uart_Printf("LCD test\n\r");
-	Uart_Printf("LCD_WR_REG() start\n\r");
-	LCD_WR_REG(0xCF);  
-	Uart_Printf("LCD_WR_DATA() start\n\r");
-	LCD_WR_DATA(0x00); 
-	Uart_Printf("LCD_WR_DATA() start\n\r");
-	LCD_WR_DATA(0xD9); //0xC1 
-	LCD_WR_DATA(0X30); 
-	LCD_WR_REG(0xED);  
-	LCD_WR_DATA(0x64); 
-	LCD_WR_DATA(0x03); 
-	LCD_WR_DATA(0X12); 
-	LCD_WR_DATA(0X81); 
-	LCD_WR_REG(0xE8);  
-	LCD_WR_DATA(0x85); 
-	LCD_WR_DATA(0x10); 
-	LCD_WR_DATA(0x7A); 
-	LCD_WR_REG(0xCB);  
-	LCD_WR_DATA(0x39); 
-	LCD_WR_DATA(0x2C); 
-	LCD_WR_DATA(0x00); 
-	LCD_WR_DATA(0x34); 
-	LCD_WR_DATA(0x02); 
-	LCD_WR_REG(0xF7);  
-	LCD_WR_DATA(0x20); 
-	LCD_WR_REG(0xEA);  
-	LCD_WR_DATA(0x00); 
-	LCD_WR_DATA(0x00); 
-	LCD_WR_REG(0xC0);    //Power control 
-	LCD_WR_DATA(0x1B);   //VRH[5:0] 
-	LCD_WR_REG(0xC1);    //Power control 
-	LCD_WR_DATA(0x12);   //SAP[2:0];BT[3:0] 0x01
-	LCD_WR_REG(0xC5);    //VCM control 
-	LCD_WR_DATA(0x08); 	 //30
-	LCD_WR_DATA(0x26); 	 //30
-	LCD_WR_REG(0xC7);    //VCM control2 
-	LCD_WR_DATA(0XB7); 
-	LCD_WR_REG(0x36);    // Memory Access Control 
-	LCD_WR_DATA(0x08); 
-	LCD_WR_REG(0x3A);   
-	LCD_WR_DATA(0x55); 
-	LCD_WR_REG(0xB1);   
-	LCD_WR_DATA(0x00);   
-	LCD_WR_DATA(0x1A); 
-	LCD_WR_REG(0xB6);    // Display Function Control 
-	LCD_WR_DATA(0x0A); 
-	LCD_WR_DATA(0xA2); 
-	LCD_WR_REG(0xF2);    // 3Gamma Function Disable 
-	LCD_WR_DATA(0x00); 
-	LCD_WR_REG(0x26);    //Gamma curve selected 
-	LCD_WR_DATA(0x01); 
-	LCD_WR_REG(0xE0);    //Set Gamma 
-	LCD_WR_DATA(0x0F); 
+	LCD_WR_REG(0xCF);   //Power control B
+	LCD_WR_DATA(0x00);  //1st: 00
+	LCD_WR_DATA(0xD9);  //0xC1? 2nd: D9 : DDVDH=VCI*2, VGH=VCI*6, VGL=-VCI*3
+	LCD_WR_DATA(0X30);  //3rd: 30 : Discharge path enable
+	LCD_WR_REG(0xED);   //Power on sequence control
+	LCD_WR_DATA(0x64);  //1st: 64 : CP1 soft start keep 3 frame, CP23 soft start keep 3 frame
+	LCD_WR_DATA(0x03);  //2nd: 03 : VCL 1st frame enable, DDVDH 4th frame enable
+	LCD_WR_DATA(0X12);  //3rd: 12 : VGH 2nd frame enable, VGL 3rd frame enable
+	LCD_WR_DATA(0X81);  //4th: 81 : DDVDH enhanced mode enable
+	LCD_WR_REG(0xE8);   //Driver timing contral A
+	LCD_WR_DATA(0x85);  //1st: 85 : gate driver non-overlap timing contorl : default + 1unit
+	LCD_WR_DATA(0x10);  //2nd: 10 : EQ timing=default, CR timing=default - 1unit
+	LCD_WR_DATA(0x7A);  //3rd: 7A : pre-charge timing contorl : default
+	LCD_WR_REG(0xCB);   //Power control A
+	LCD_WR_DATA(0x39);  //1st: 39 : fix value
+	LCD_WR_DATA(0x2C);  //2nd: 2C : fix value
+	LCD_WR_DATA(0x00);  //3rd: 00 : fix value
+	LCD_WR_DATA(0x34);  //4th: 34 : REG_VD=1.6V
+	LCD_WR_DATA(0x02);  //5th: 02 : DDVDH=5.6V
+	LCD_WR_REG(0xF7);   //Pump ratio control
+	LCD_WR_DATA(0x20);  //20 : ratio=DDVDH=2*VCI
+	LCD_WR_REG(0xEA);   //Driver timing control B
+	LCD_WR_DATA(0x00);  //1st: gate driver timing control 00 : EQ2GND,EQ2DDVDH,EQ2DDVDH,EQ2GND all 0unit
+	LCD_WR_DATA(0x00);  //2nd: 00 : fix value
+	LCD_WR_REG(0xC0);   //Power control 1
+	LCD_WR_DATA(0x1B);  //1st: 1B : GVDD=4.20V
+	LCD_WR_REG(0xC1);   //Power control 2
+	LCD_WR_DATA(0x12);  //12 : DDVDH=VCI*2, VGH=VCI*6, VHL=-VCI*4
+	LCD_WR_REG(0xC5);   //VCOM control 1
+	LCD_WR_DATA(0x08); 	//1st: 08 : VCOMH=2.900V
+	LCD_WR_DATA(0x26); 	//2nd: 26 : VCOML=-1.550V
+	LCD_WR_REG(0xC7);   //VCOM control 2
+	LCD_WR_DATA(0XB7);  //1st: B7 : nVM=1, VCOMH=VMH-9, VCOML=VML-9
+	LCD_WR_REG(0x36);   //Memory Access Control
+	LCD_WR_DATA(0x08);  //08 : MY=MX=MV=ML=0, BGR=1, MH=0 : 
+	LCD_WR_REG(0x3A);   //COLMOD: Pixel Format Set
+	LCD_WR_DATA(0x55);  //55 : RGB=16bits/pixel, MCU=16bits/pixel
+	LCD_WR_REG(0xB1);   //Frame Rate Control
+	LCD_WR_DATA(0x00);  //1st: 00 : Division ratio=f_osc (no divide)
+	LCD_WR_DATA(0x1A);  //2nd: 1A : Frame Rate=73Hz
+	LCD_WR_REG(0xB6);   //Display Function Control
+	LCD_WR_DATA(0x0A);  //1st: 0A : the scan mode in non-display area : Interval scan... see 164page
+	LCD_WR_DATA(0xA2);  //2nd: A2 : Liquid crystal type=Normally white, Scan Cycle=5frames ... see 165page
+	LCD_WR_REG(0xF2);   //Enable 3Gamma Function
+	LCD_WR_DATA(0x00);  //00 : disable
+	LCD_WR_REG(0x26);   //Gamma Set
+	LCD_WR_DATA(0x01);  //01 : Gamma curve 1
+	LCD_WR_REG(0xE0);   //Positive Gamma Correction
+	LCD_WR_DATA(0x0F);  //
 	LCD_WR_DATA(0x1D); 
 	LCD_WR_DATA(0x1A); 
 	LCD_WR_DATA(0x0A); 
@@ -253,7 +217,7 @@ void LCD_Init(void)
 	LCD_WR_DATA(0x09); 
 	LCD_WR_DATA(0x05); 
 	LCD_WR_DATA(0x04); 		 
-	LCD_WR_REG(0XE1);    //Set Gamma 
+	LCD_WR_REG(0XE1);   //Negative Gamma Correction
 	LCD_WR_DATA(0x00); 
 	LCD_WR_DATA(0x18); 
 	LCD_WR_DATA(0x1D); 
@@ -269,32 +233,24 @@ void LCD_Init(void)
 	LCD_WR_DATA(0x2E); 
 	LCD_WR_DATA(0x2F); 
 	LCD_WR_DATA(0x05); 
-	LCD_WR_REG(0x2B); 
+	LCD_WR_REG(0x2B);   //Page Address Set
 	LCD_WR_DATA(0x00);
 	LCD_WR_DATA(0x00);
 	LCD_WR_DATA(0x01);
 	LCD_WR_DATA(0x3f);
-	LCD_WR_REG(0x2A); 
+	LCD_WR_REG(0x2A);   //Column Address Set
 	LCD_WR_DATA(0x00);
 	LCD_WR_DATA(0x00);
 	LCD_WR_DATA(0x00);
-	LCD_WR_DATA(0xef);	 
-	LCD_WR_REG(0x11); //Exit Sleep
+	LCD_WR_DATA(0xef);
+	LCD_WR_REG(0x11); //Sleep out (no param)
 	SysTick_Delay_ms(120);
-	LCD_WR_REG(0x29); //display on
+	LCD_WR_REG(0x29); //Display on (no param)
 
-	Uart_Printf("LCD_direction() start\n\r");
+	// Uart_Printf("LCD_direction() start\n\r");
     LCD_direction(USE_HORIZONTAL); //LCD 표시 방향 설정
-    int i;
-    volatile int j;
-    for (i = 0; i < 10; i++) //test
-    {
-        TIM1->CCR4 = TIM1->ARR * i / 10;
-        for (j = 0; j < 100000; j++);
-    }
-	TIM1->CCR1 = 0;     // backlight 켜기 (duty 100%)
-	// Macro_Set_Bit(GPIOB->ODR, 8);     // backlight 켜기 (duty 100%)
-	LCD_Clear(BLUE);   // 전체화면 흰색
+    
+	LCD_Clear(BLUE);   // 전체화면 파랑
 }
 
 void LCD_SetWindows(u16 xStar, u16 yStar,u16 xEnd,u16 yEnd)

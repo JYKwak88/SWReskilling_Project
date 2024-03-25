@@ -93,41 +93,25 @@ void LED_Control(void)
     if (SPEED < 0) ReverseLED_On();
     else ReverseLED_Off();
 
-    BlinkLED_Control();
+    if (!EMERGENCY) BlinkLED_Control();
 }
 
 void BlinkLED_Control(void)
 {
-    if (EMERGENCY)
+    // if (EMERGENCY)
+    // {
+    //     if (DIRECTION == -1)        Macro_Write_Block(GPIOB->ODR, 0x1, Macro_Check_Bit_Set(GPIOB->ODR, 8), 9);
+    //     else if (DIRECTION == 1)    Macro_Write_Block(GPIOB->ODR, 0x1, Macro_Check_Bit_Set(GPIOB->ODR, 9), 8);
+    //     else if (DIRECTION == 0)
+    //     {
+    //         Macro_Clear_Area(GPIOB->ODR, 0x3, 8);
+    //         BLINK_CNT = 0;
+    //     }
+    // }
+    // else
     {
-        if (DIRECTION == -1) Macro_Write_Block(GPIOB->ODR, 0x1, Macro_Check_Bit_Set(GPIOB->ODR, 8), 9);
-        else if (DIRECTION == 1) Macro_Write_Block(GPIOB->ODR, 0x1, Macro_Check_Bit_Set(GPIOB->ODR, 9), 8);
-        else if (DIRECTION == 0)
-        {
-            Macro_Clear_Area(GPIOB->ODR, 0x3, 8);
-            BLINK_CNT = 0;
-        }
-    }
-    else
-    {
-        if (DIRECTION == -1)
-        {
-            Macro_Set_Bit(GPIOB->ODR, 9);
-            // if (Macro_Check_Bit_Set(GPIOB->ODR, 8))
-            // {
-            //     Macro_Clear_Bit(GPIOB->ODR, 8);
-            //     BLINK_CNT = 0;
-            // }
-        }
-        else if (DIRECTION == 1)
-        {
-            Macro_Set_Bit(GPIOB->ODR, 8);
-            // if (Macro_Check_Bit_Set(GPIOB->ODR, 9))
-            // {
-            //     Macro_Clear_Bit(GPIOB->ODR, 9);
-            //     BLINK_CNT = 0;
-            // }
-        }
-        else if (DIRECTION == 0) Macro_Set_Area(GPIOB->ODR, 0x3, 8);
+        if (DIRECTION == -1)        Macro_Set_Bit(GPIOB->ODR, 9);
+        else if (DIRECTION == 1)    Macro_Set_Bit(GPIOB->ODR, 8);
+        else if (DIRECTION == 0)    Macro_Set_Area(GPIOB->ODR, 0x3, 8);
     }
 }

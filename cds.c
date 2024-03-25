@@ -4,7 +4,7 @@ void CDS_Init(void)
 {
 	// ADC_IN9 Configuration
 	Macro_Set_Bit(RCC->APB2ENR, 3); 				// PB POWER ON
-	Macro_Write_Block(GPIOA->CRL, 0xf, 0x0, 4); 	// PB1(ADC-IN9) = Analog Input
+	Macro_Write_Block(GPIOB->CRL, 0xf, 0x0, 4); 	// PB1(ADC-IN9) = Analog Input
 
 	Macro_Set_Bit(RCC->APB2ENR, 9); 				// ADC1 POWER ON
 	Macro_Write_Block(RCC->CFGR, 0x3, 0x2, 14); 	// ADC1 CLOCK = 12MHz(PCLK2/6) : divide by 00=2, 01=4, 10=6, 11=8

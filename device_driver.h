@@ -7,9 +7,10 @@ extern volatile int Uart1_Rx_In;
 extern volatile char Uart1_Rx_Data;
 extern volatile int Uart3_Rx_In;
 extern volatile char Uart3_Rx_Data;
-extern volatile int STATUS;
+extern volatile int DRIVE_STATUS;
 extern volatile int DIRECTION;
 extern volatile int SPEED;
+extern volatile int LIGHT_LEVEL;
 extern volatile int NIGHT;
 extern volatile int AUTO_LIGHT;
 extern volatile int EMERGENCY;
@@ -113,6 +114,8 @@ extern void Forward_Car(void);
 extern void Back_Car(void);
 extern void Stop_Car(void);
 extern void Turn_Car(char input);
+
+extern void Drive_Car(char input);
 
 // cds.c
 extern void CDS_Init(void);

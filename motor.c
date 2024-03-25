@@ -49,15 +49,7 @@ void TIM2_Repeat(void)
 void Motor_Init(void)
 {
 	TIM2_Repeat();
-    Uart1_Printf("Engine Start\n\r");
-    Uart1_Printf("\n\r");
-    Uart1_Printf("[1]~[5] select speed\n\r");
-    Uart1_Printf("                 [w] speed up\n\r");
-    Uart1_Printf("[a] turn left    [s] speed down    [d] turn right\n\r");
-    Uart1_Printf("                 [x] stop\n\r");
-    Uart1_Printf("\n\r");
-    Uart1_Printf("DIRECTION = %d, SPEED = %d\n\r", DIRECTION, SPEED);
-
+    Uart_Printf("========== Engine Start ==========\n\r\n\r");
 }
 
 struct _SPEED
@@ -65,9 +57,9 @@ struct _SPEED
     int lf, lr, rf, rr;
 };
                             //spd  back2[-2]  back[-1]  stop[0]   one[1]    two[2]
-const struct _SPEED gear[3][8] = {{{0,9,0,9},{0,3,0,5},{0,0,0,0},{0,0,5,0},{2,0,6,0},{3,0,7,0},{4,0,8,0},{5,0,10,0}},   // left[-1]
+const struct _SPEED gear[3][8] = {{{0,9,0,9},{0,3,0,5},{0,5,5,0},{0,0,5,0},{2,0,6,0},{3,0,7,0},{4,0,8,0},{5,0,10,0}},   // left[-1]
                                   {{0,9,0,9},{0,5,0,5},{0,0,0,0},{5,0,5,0},{6,0,6,0},{7,0,7,0},{8,0,8,0},{10,0,10,0}},  // center[0]
-                                  {{0,9,0,9},{0,5,0,3},{0,0,0,0},{5,0,0,0},{6,0,2,0},{7,0,3,0},{8,0,4,0},{10,0,5,0}}};  // right[1]
+                                  {{0,9,0,9},{0,5,0,3},{5,0,0,5},{5,0,0,0},{6,0,2,0},{7,0,3,0},{8,0,4,0},{10,0,5,0}}};  // right[1]
 void Motor_Drive(int dir, int spd)
 {
     TIM2->CCR1 = TIM2->ARR * (10-gear[dir+1][spd+2].lf) / 10;

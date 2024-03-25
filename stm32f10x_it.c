@@ -421,10 +421,12 @@ void ADC1_2_IRQHandler(void)
   if (NIGHT == 1 && LIGHT_LEVEL > 0xb00)
   {
     NIGHT = 0;
+    LED_Control();
   }
   else if (NIGHT == 0 && LIGHT_LEVEL < 0x900)
   {
     NIGHT = 1;
+    LED_Control();
   }
 
   Macro_Clear_Bit(ADC1->SR, 1);
