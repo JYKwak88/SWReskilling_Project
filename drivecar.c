@@ -1,19 +1,52 @@
 #include "device_driver.h"
 
-void Start_Message(void)
+void Wait_Bluetooth_Connect(void)
 {
-    Uart_Printf("========== Move Control ==========\n\r");
-    Uart_Printf("[0]:stop       |  [1]~[5]:select fwd speed  |\n\r");
-    Uart_Printf("               |  [w]:go forward, speed++   |\n\r");
-    Uart_Printf("[a]:turn left  |  [s]:stop                  |  [d]:turn right\n\r");
-    Uart_Printf("               |  [x]:go back               |\n\r");
-    Uart_Printf("========== Light Control =========\n\r");
-    Uart_Printf("[l]:toggle light  |  [o]:toggle auto light  |  [y]:emergency light\n\r");
-    Uart_Printf("\n\r");
-    Print_State();
+    LCD_Clear(BLACK);
+    POINT_COLOR = SKYBLUE;
+    u16 t;
+    for (t = 10; t <= 20; t++)
+    {
+        LCD_DrawRectangle(t,t,LCD_H-t,LCD_W-t);
+    }
+
+    LCD_ShowString(t+3, t+1, 16, (u8*)"Wait for Bluetooth Connecting...", 1);
+    LCD_ShowString(t+3, t+1+18*2, 16, (u8*)"Bluetooth NAME : HC-06", 1);
+    LCD_ShowString(t+3, t+1+18*3, 16, (u8*)"Bluetooth PIN  : 1234", 1);
+    LCD_ShowString(t+3, t+1+18*5, 16, (u8*)"1. Connect bluetooth", 1);
+    LCD_ShowString(t+3, t+1+18*6, 16, (u8*)"2. then open terminal", 1);
+    LCD_ShowString(t+3, t+1+18*7, 16, (u8*)"3. and send [S] key", 1);
+
+    POINT_COLOR = WHITE;
+    LCD_ShowString(t+3, t+1+18*9, 16,  (u8*)"       LGE SW Reskilling Program", 1);
+    LCD_ShowString(t+3, t+1+18*10, 16, (u8*)"           jaeyoung.kwak@lge.com", 1);
+
+
+
+    while (Uart_Rx_Data != 's')
+	{
+		Uart_Printf("Press [s] key if you see this message...\r");
+		SysTick_Delay_ms(1000);
+	}
+	Uart_Rx_In = 0;
+	Uart_Printf("\n\rControl via bluetooth COM port\n\r");
 }
 
-void Print_State(void)
+void Help_Message_Uart(void)
+{
+    Uart_Printf("= Move Control \n\r");
+    Uart_Printf("0:stop          |  1~5:select fwd speed   |\n\r");
+    Uart_Printf("                |  w:go forward, speed++  |\n\r");
+    Uart_Printf("a:turn left     |  s:stop                 |  d:turn right\n\r");
+    Uart_Printf("                |  x:go back, speed--     |\n\r");
+    Uart_Printf("= Light Control =\n\r");
+    Uart_Printf("l:toggle light    |  o:toggle auto light  |  y:emergency light\n\r");
+    Uart_Printf("p:auto brightness |   [,]:brightness -/+\n\r");
+    Uart_Printf("\n\r");
+    Print_State_Uart();
+}
+
+void Print_State_Uart(void)
 {
     Uart_Printf("DRIVE_STATUS = %2d, DIRECTION = %2d, SPEED = %2d\n\r", DRIVE_STATUS, DIRECTION, SPEED);
 }
@@ -30,7 +63,7 @@ void Forward_Car(void)
     DRIVE_STATUS = 1;
 }
 
-void Back_Car(void)
+void Backward_Car(void)
 {
     Motor_Drive(0, -2);
     SysTick_Delay_ms(100);
@@ -82,12 +115,20 @@ void Drive_Car(char input)
         else if (DRIVE_STATUS == -1) DRIVE_STATUS = 0;
         break;
     case 'x':
-        if (DRIVE_STATUS == 1) DRIVE_STATUS = 0;
+        if (DRIVE_STATUS == 1)
+        {
+            if (SPEED > 1) SPEED--;
+            else if (SPEED == 1)
+            {
+                SPEED = 0;
+                DRIVE_STATUS = 0;
+            }
+        }
         else if (DRIVE_STATUS == 0) DRIVE_STATUS = -1;
         break;
     }
-    
+
     if (DRIVE_STATUS == 1) Forward_Car();
-    else if (DRIVE_STATUS == -1) Back_Car();
+    else if (DRIVE_STATUS == -1) Backward_Car();
     else if (DRIVE_STATUS == 0) Stop_Car();
 }

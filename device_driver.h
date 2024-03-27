@@ -2,6 +2,9 @@
 #include "option.h"
 #include "macro.h"
 #include "malloc.h"
+#include "stdlib.h"
+#include "string.h"
+#include "lcddefine.h"
 
 extern volatile int Uart1_Rx_In;
 extern volatile char Uart1_Rx_Data;
@@ -13,6 +16,8 @@ extern volatile int SPEED;
 extern volatile int LIGHT_LEVEL;
 extern volatile int NIGHT;
 extern volatile int AUTO_LIGHT;
+extern volatile int LCD_AUTO_BRIGHTNESS;
+extern volatile int LCD_BR_LEVEL;
 extern volatile int EMERGENCY;
 extern volatile int BLINK_CNT;
 extern volatile int LIGHT_ON;
@@ -35,35 +40,35 @@ extern volatile int NO_INPUT_CNT;
 #define Uart_Rx_Data        Uart3_Rx_Data
 #endif
 
-extern void Uart1_Init(int baud);
-extern void Uart1_Send_Byte(char data);
-extern void Uart1_Send_String(char *pt);
-extern void Uart1_Printf(char *fmt,...);
-extern char Uart1_Get_Char(void);
-extern char Uart1_Get_Pressed(void);
-extern void Uart3_Init(int baud);
-extern void Uart3_Send_Byte(char data);
-extern void Uart3_Send_String(char *pt);
-extern void Uart3_Printf(char *fmt,...);
-extern char Uart3_Get_Char(void);
-extern char Uart3_Get_Pressed(void);
+void Uart1_Init(int baud);
+void Uart1_Send_Byte(char data);
+void Uart1_Send_String(char *pt);
+void Uart1_Printf(char *fmt,...);
+char Uart1_Get_Char(void);
+char Uart1_Get_Pressed(void);
+void Uart3_Init(int baud);
+void Uart3_Send_Byte(char data);
+void Uart3_Send_String(char *pt);
+void Uart3_Printf(char *fmt,...);
+char Uart3_Get_Char(void);
+char Uart3_Get_Pressed(void);
 
 
 // Led.c
-extern void LED_Init(void);
-extern void LED_Display(unsigned int num);
-extern void LED_All_On(void);
-extern void LED_All_Off(void);
+void LED_Init(void);
+void LED_Display(unsigned int num);
+void LED_All_On(void);
+void LED_All_Off(void);
 
 // Clock.c
-extern void Clock_Init(void);
+void Clock_Init(void);
 
 // Key.c
-extern void Key_Poll_Init(void);
-extern int Key_Get_Pressed(void);
-extern void Key_Wait_Key_Released(void);
-extern int Key_Wait_Key_Pressed(void);
-extern void Key_ISR_Enable(int en);
+void Key_Poll_Init(void);
+int Key_Get_Pressed(void);
+void Key_Wait_Key_Released(void);
+int Key_Wait_Key_Pressed(void);
+void Key_ISR_Enable(int en);
 
 // SysTick.c
 void SysTick_Delay_ms(unsigned int msec);
@@ -71,53 +76,113 @@ void SysTick_Delay_ms(unsigned int msec);
 // Timer.c
 
 // SysTick.c
-extern void SysTick_Delay_ms(unsigned int msec);
+void SysTick_Delay_ms(unsigned int msec);
 
 // motor.c
-#define TIM2_TICK         	(5) 				// usec
-#define TIM2_FREQ 	  		(1000000/TIM2_TICK)	// Hz
-#define TIM2_PLS_OF_10ms  	(10000/TIM2_TICK)
-#define TIM2_UE_PERIOD      (2000)              // usec : PWM주기
-#define TIM2_MAX	  		(0xffffu)
-
-extern void TIM2_Repeat(void);
-extern void Motor_Init(void);
-extern void Motor_Drive(int dir, int spd);
+void TIM2_Repeat(void);
+void Motor_Init(void);
+void Motor_Drive(int dir, int spd);
 
 // extled.c
-extern void H_R_LED_Init(void);
-extern void HeadLED_On(void);
-extern void HeadLED_Off(void);
-extern void ReverseLED_On(void);
-extern void ReverseLED_Off(void);
-extern void TailLED_Init(void);
-extern void TailLED_On(void);
-extern void TailLED_Release(void);
+void H_T_LED_Init(void);
+void HeadLED_On(void);
+void HeadLED_Off(void);
+void ReverseLED_On(void);
+void ReverseLED_Off(void);
+void TailLED_Init(void);
+void TailLED_On(void);
+void TailLED_Release(void);
 
-#define TIM4_TICK         	(50) 			// usec
-#define TIM4_FREQ 	  		(1000000/TIM4_TICK)	// Hz
-#define TIM4_PLS_OF_10ms  	(10000/TIM4_TICK)
-#define TIM4_UE_PERIOD      (2000)              // usec : PWM주기
-#define TIM4_MAX	  		(0xffffu)
+void BlinkLED_Init(void);
+void BlinkLED_Control(void);
 
-extern void BlinkLED_Init(void);
-extern void BlinkLED_Control(void);
-
-extern void LED_Control(void);
+void LED_Control(void);
 
 
 // drivecar.c
-extern void Start_Message(void);
-extern void Print_State(void);
+void Wait_Bluetooth_Connect(void);
+void Help_Message_Uart(void);
+void Print_State_Uart(void);
 
-extern void Forward_Car(void);
-extern void Back_Car(void);
-extern void Stop_Car(void);
-extern void Turn_Car(char input);
+void Forward_Car(void);
+void Backward_Car(void);
+void Stop_Car(void);
+void Turn_Car(char input);
 
-extern void Drive_Car(char input);
+void Drive_Car(char input);
 
 // cds.c
-extern void CDS_Init(void);
-extern void CDS_Start(void);
-extern void CDS_Stop(void);
+void CDS_Init(void);
+void CDS_Start(void);
+void CDS_Stop(void);
+
+// lcd.c
+
+//LCD 중요한 매개변수 세트
+typedef struct
+{
+	u16 width;			//LCD width
+	u16 height;			//LCD height
+	u16 id;				  //LCD ID
+	u8  dir;			  //화면 방향 : 0, 세로; 1, 가로
+	u16	 wramcmd;		//gram명령 작성 시작??
+	u16  setxcmd;		//x 좌표 설정 명령
+	u16  setycmd;		//y 좌표 설정 명령
+}_lcd_dev;
+
+extern _lcd_dev lcddev;
+
+extern u16 POINT_COLOR;
+extern u16 BACK_COLOR;
+extern u16 DeviceCode;
+
+void SPI2_Init(void);
+void LCD_GPIO_Init(void);
+void BLU_PWM_Init(void);
+
+#define LCD_RST_SET     GPIOA->BSRR=(1<<6)
+#define LCD_RST_CLR     GPIOA->BRR=(1<<6)
+#define LCD_CS_SET      GPIOB->BSRR=(1<<12)
+#define LCD_CS_CLR      GPIOB->BRR=(1<<12)
+#define LCD_RS_SET      GPIOA->BSRR=(1<<7)
+#define LCD_RS_CLR      GPIOA->BRR=(1<<7)
+
+void SPI2_Init(void);
+void LCD_GPIO_Init(void);
+void BLU_PWM_Init(void);
+void LCD_Reset(void);
+void LCD_WR_REG(u8 data);
+void LCD_WriteReg(u8 LCD_Reg, u16 LCD_RegValue);
+void LCD_WR_DATA(u8 data);
+u8 SPI_WriteByte(u8 Byte);
+void LCD_WriteRAM_Prepare(void);
+void Lcd_WriteData_16Bit(u16 Data);
+void LCD_DrawPoint(u16 x,u16 y);
+void LCD_Clear(u16 Color);
+void LCD_Init(void);
+void LCD_SetWindows(u16 xStar, u16 yStar,u16 xEnd,u16 yEnd);
+void LCD_SetCursor(u16 Xpos, u16 Ypos);
+void LCD_direction(u8 direction);
+
+void Help_Message_LCD(void);
+void LCD_LED_Toggle_Info(void);
+
+// gui.c
+void GUI_DrawPoint(u16 x,u16 y,u16 color);
+void LCD_Fill(u16 sx,u16 sy,u16 ex,u16 ey,u16 color);    //start x,y, end x,y, color
+void LCD_DrawLine(u16 x1, u16 y1, u16 x2, u16 y2);   //start x,y, end x,y
+void LCD_DrawRectangle(u16 x1, u16 y1, u16 x2, u16 y2);
+void LCD_DrawFillRectangle(u16 x1, u16 y1, u16 x2, u16 y2);
+void _draw_circle_8(int xc, int yc, int x, int y, u16 c);
+void gui_circle(int xc, int yc,u16 c,int r, int fill);   // center x,y, color, radius, (1)fill/(0)unfill
+void Draw_Triangel(u16 x0,u16 y0,u16 x1,u16 y1,u16 x2,u16 y2);   // 삼각형 꼭지점 3개 좌표
+void Fill_Triangel(u16 x0,u16 y0,u16 x1,u16 y1,u16 x2,u16 y2);
+void LCD_ShowChar(u16 x,u16 y,u16 fc, u16 bc, u8 num,u8 size,u8 mode);	// start x,y, font color, background color, ascii-code, font size, (0)overlying/(1)non-overlying
+void LCD_ShowString(u16 x,u16 y,u8 size,u8 *p,u8 mode);	// start x,y, font size, string pointer, (0)overlying/(1)non-overlying
+void LCD_ShowMonobmp(u16 x,u16 y,u16 fc, u16 bc, u8 x_size, u8 y_size, u8 mode);
+void GUI_DrawSpeedmeter(u16 x, u16 y, u16 fc, u16 bc, u8 mode);
+void GUI_DrawSpeedmeter_BIG(u16 x, u16 y, u16 fc, u16 bc, u8 mode);
+void Draw_LeftArrow(void);
+void Draw_RightArrow(void);
+
+extern const unsigned char Img_Speedmeter[1056];

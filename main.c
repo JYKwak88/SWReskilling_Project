@@ -1,5 +1,5 @@
 #include "device_driver.h"
-#include "lcd.h"
+
 static void Sys_Init(void)
 {
 	Clock_Init();
@@ -31,7 +31,7 @@ void Main(void)
 	SPEED = stop;
 
 	Motor_Init();
-	H_R_LED_Init();
+	H_T_LED_Init();
 	TailLED_Init();
 	LED_Control();
 	CDS_Init();
@@ -39,18 +39,18 @@ void Main(void)
 
 	LCD_Init();
 
-	
 #if (!DEV)
-	while (Uart_Rx_Data != 's')
-	{
-		Uart_Printf("Press [s] key if you see this messege...\r");
-		SysTick_Delay_ms(1000);
-	}
-	Uart_Rx_In = 0;
-	Uart_Printf("\n\rControl via bluetooth COM port\n\r");
-		
+	Wait_Bluetooth_Connect();
+	LCD_Clear(BLACK);
 #endif
-	Start_Message();
+
+	Help_Message_Uart();
+	Help_Message_LCD();
+	GUI_DrawSpeedmeter(METER_CENTER_X-METER_W/2, METER_CENTER_Y-METER_H/2, METER_COLOR, METER_BACK_COLOR, 1);
+	// GUI_DrawSpeedmeter_BIG(30,30,METER_COLOR, METER_BACK_COLOR, 1);
+	Draw_LeftArrow();
+	Draw_RightArrow();
+
 
 	for(;;)
 	{
@@ -60,11 +60,12 @@ void Main(void)
 		   전진 중 후진 누르면 멈추고, 후진 중 전진 누르면 멈추고 0,x 키도 멈추고
 		   왼쪽, 오른쪽만 방향 계속 유지하도록 해야함
 		*/
-		
+
 		if (Uart_Rx_In)
 		{
 			input = Uart_Rx_Data;
 			Uart_Rx_In = 0;
+			if (input >= 'A' && input <= 'Z') input += -'A' + 'a';
 			if (input == 'a' || input == 'd') NO_INPUT_CNT = 1;
 			else
 			{
@@ -88,36 +89,39 @@ void Main(void)
 					Drive_Car(input);
 					break;
 
-				case 'o':
-					AUTO_LIGHT ^= 1; Uart_Printf("AUTO_LIGHT = %d\n\r", AUTO_LIGHT); break;
 				case 'l':
-					LIGHT_ON ^= 1; Uart_Printf("LIGHT_ON = %d\n\r", LIGHT_ON); break;
+					LIGHT_ON ^= 1; Uart_Printf("LIGHT_ON = %d\n\r", LIGHT_ON); LCD_LED_Toggle_Info(); break;
 				case 'y':
-					EMERGENCY ^= 1; Uart_Printf("EMERGENCY = %d\n\r", EMERGENCY); break;
-				
+					EMERGENCY ^= 1; Uart_Printf("EMERGENCY = %d\n\r", EMERGENCY); LCD_LED_Toggle_Info();  break;
+				case 'o':
+					AUTO_LIGHT ^= 1; Uart_Printf("AUTO_LIGHT = %d\n\r", AUTO_LIGHT); LCD_LED_Toggle_Info();  break;
+
 				case 'p':
-					LCD_AUTO_BRIGHTNESS ^= 1; Uart_Printf("LCD_AUTO_BRIGHTNESS = %d\n\r", LCD_AUTO_BRIGHTNESS); break;
+					LCD_AUTO_BRIGHTNESS ^= 1; Uart_Printf("LCD_AUTO_BRIGHTNESS = %d\n\r", LCD_AUTO_BRIGHTNESS); LCD_LED_Toggle_Info(); break;
 				case '[':
-					LCD_AUTO_BRIGHTNESS = 0;
+					LCD_AUTO_BRIGHTNESS = 0; LCD_LED_Toggle_Info();
 					if (LCD_BR_LEVEL > 0) LCD_BR_LEVEL--;
 					Uart_Printf("LCD_AUTO_BRIGHTNESS DISABLE, LCD_BL_LEVEL = %d\n\r", LCD_BR_LEVEL);
 					break;
 				case ']':
-					LCD_AUTO_BRIGHTNESS = 0;
+					LCD_AUTO_BRIGHTNESS = 0; LCD_LED_Toggle_Info();
 					if (LCD_BR_LEVEL < 100) LCD_BR_LEVEL++;
 					Uart_Printf("LCD_AUTO_BRIGHTNESS DISABLE, LCD_BL_LEVEL = %d\n\r", LCD_BR_LEVEL);
 					break;
 
+				case 'h':
+					Help_Message_Uart(); break;
 				default:
 					Uart_Printf("[%c] is Wrong Input\n\r", input);
+    				Uart_Printf("Press 'H' key if you see the key guide\n\r");
 				}
 
-				Print_State();
+				Print_State_Uart();
 				LED_Control();
 			}
 			if (input == 'a' || input == 'd') pre_input = input;
 			else pre_input = 0;
-			
+
 		}
 
 		if (LCD_AUTO_BRIGHTNESS)
@@ -125,6 +129,7 @@ void Main(void)
 			LCD_BR_LEVEL = LIGHT_LEVEL * 100 / 0xfff;
 		}
 		TIM4->CCR1 = TIM4->ARR * LCD_BR_LEVEL / 100;
+
 
 	}
 

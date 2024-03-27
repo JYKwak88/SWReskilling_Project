@@ -9,7 +9,7 @@
 */
 #include "device_driver.h"
 
-void H_R_LED_Init(void)
+void H_T_LED_Init(void)
 {
     // Head, Rear : GPIO
     Macro_Set_Bit(RCC->APB2ENR, 2);     // GPIOA Clock

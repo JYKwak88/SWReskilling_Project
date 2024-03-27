@@ -23,14 +23,14 @@ AS				= "$(TOOL_DIR)/bin/$(TARGET)-as"
 CC				= "$(TOOL_DIR)/bin/$(TARGET)-gcc"
 LD 				= "$(TOOL_DIR)/bin/$(TARGET)-ld"
 OBJCOPY			= "$(TOOL_DIR)/bin/$(TARGET)-objcopy"
-OBJDUMP			= "$(TOOL_DIR)/bin/$(TARGET)-objdump"
+#OBJDUMP			= "$(TOOL_DIR)/bin/$(TARGET)-objdump"
 
 # Source & Header File 
 CSRC 			= $(wildcard *.c)
 ASRC 			= $(wildcard *.s)
 HEADER 			= $(wildcard *.h)
 OBJS    		= $(CSRC:.c=.o) $(ASRC:.s=.o)
-DUMP 			= $(wildcard *.txt)
+#DUMP 			= $(wildcard *.txt)
 
 # Library and include folder
 C_DIR			= $(TOOL_DIR)/$(TARGET)
@@ -42,8 +42,8 @@ all : $(OUT_BIN_FILE)
 
 $(OUT_BIN_FILE): $(OUT_ELF_FILE)
 	$(OBJCOPY) $(OUT_ELF_FILE) $(OUT_BIN_FILE) -O binary
-	$(OBJDUMP) -x -D .\$(OUT_ELF_FILE) > .\__dump.txt
-	$(OBJDUMP) -x -D -S .\$(OUT_ELF_FILE) > .\__dump_all.txt
+#	$(OBJDUMP) -x -D .\$(OUT_ELF_FILE) > .\__dump.txt
+#	$(OBJDUMP) -x -D -S .\$(OUT_ELF_FILE) > .\__dump_all.txt
 
 $(OUT_ELF_FILE): $(OBJS)
 	$(LD) $(OBJS) -o $(OUT_ELF_FILE) $(LDFLAGS) -Map $(OUT_MAP_FILE) $(LIB_OPTION) -T $(LDS_FILE_NAME)
@@ -56,4 +56,4 @@ clean :
 	rm -f $(OUT_ELF_FILE)
 	rm -f $(OUT_MAP_FILE)
 	rm -f $(OBJS)
-	rm -f $(DUMP)
+#	rm -f $(DUMP)

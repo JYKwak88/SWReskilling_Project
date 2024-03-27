@@ -14,3 +14,18 @@
 #define STACK_LIMIT	(HEAP_LIMIT + 8)
 #define STACK_BASE	(RAM_END + 1)
 #define STACK_SIZE	(STACK_BASE - STACK_LIMIT)
+
+
+// motor.c
+#define TIM2_TICK         	(5) 				// usec
+#define TIM2_FREQ 	  		(1000000/TIM2_TICK)	// Hz
+#define TIM2_PLS_OF_10ms  	(10000/TIM2_TICK)
+#define TIM2_UE_PERIOD      (2000)              // usec : PWM주기
+#define TIM2_MAX	  		(0xffffu)
+
+// extled.c
+#define TIM4_TICK         	(50) 			// usec
+#define TIM4_FREQ 	  		(1000000/TIM4_TICK)	// Hz
+#define TIM4_PLS_OF_10ms  	(10000/TIM4_TICK)
+#define TIM4_UE_PERIOD      (2000)              // usec : PWM주기
+#define TIM4_MAX	  		(0xffffu)

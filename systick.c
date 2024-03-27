@@ -8,6 +8,6 @@ void SysTick_Delay_ms(unsigned int msec)
 	Macro_Set_Bit(SysTick->CTRL, 0);
 
 	while (Macro_Check_Bit_Clear(SysTick->CTRL, 16));
-	
+
 	SysTick->CTRL = 0;
 }

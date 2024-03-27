@@ -1,5 +1,4 @@
 #include "device_driver.h"
-#include "lcd.h"
 /****************************************************************************************************
 // SCK          SPI2_SCK(PB13)
 // SDI(MOSI)    SPI2_MOSI(PB15)
@@ -8,7 +7,7 @@
 // Back Light   TIM3_CH1(PB6)
 // DC/RS        PA7
 // RST          PA6
-**************************************************************************************************/	
+**************************************************************************************************/
 #define SPI2_BR_OP (0)
 // SPI2_BR_OP   PCLK Dividing   Baud Rate(MHz)   (SPI2:APB1 => PCLK1 = 36MHz)
 // 0            2               18
@@ -19,17 +18,16 @@
 // 5            64              ...
 // 6            128
 // 7            256
-
 //중요 LCD 매개변수 관리
 //기본값은 세로 화면입니다.
 _lcd_dev lcddev;
 
 //브러시 색상, 배경색
-u16 POINT_COLOR = 0x0000,BACK_COLOR = 0xFFFF;  
-u16 DeviceCode;	 
+u16 POINT_COLOR = 0x0000,BACK_COLOR = 0xFFFF;
+u16 DeviceCode;
 
 void SPI2_Init(void)
-{ 
+{
 	Macro_Set_Bit(RCC->APB2ENR, 3);       // PB Enable
 	Macro_Write_Block(GPIOB->CRH, 0xffff, 0xb8b3, 16);  // PB12~15 : SPI 설정
 	Macro_Set_Bit(GPIOB->ODR, 12);      // NSS High
@@ -83,7 +81,7 @@ void LCD_Reset(void)
 }
 
 void LCD_WR_REG(u8 data)
-{ 
+{
     LCD_CS_CLR;
     LCD_RS_CLR;
     SPI_WriteByte(data);
@@ -91,9 +89,9 @@ void LCD_WR_REG(u8 data)
 }
 
 void LCD_WriteReg(u8 LCD_Reg, u16 LCD_RegValue)
-{	
-	LCD_WR_REG(LCD_Reg);  
-	LCD_WR_DATA(LCD_RegValue);	    		 
+{
+	LCD_WR_REG(LCD_Reg);
+	LCD_WR_DATA(LCD_RegValue);
 }
 
 void LCD_WR_DATA(u8 data)
@@ -113,38 +111,44 @@ u8 SPI_WriteByte(u8 Byte)
 	SPI2->DR = Byte;        // Byte 전송
     // Uart_Printf("Wait RX buffer not empty\n\r");
 	while(Macro_Check_Bit_Clear(SPI2->SR, 0));      // Wait untill Rx buffer not empty
-	return SPI2->DR;        // 받은 data는 리턴			
-} 
+	return SPI2->DR;        // 받은 data는 리턴
+}
 
 void LCD_WriteRAM_Prepare(void)
 {
 	LCD_WR_REG(lcddev.wramcmd);
-}	 
+}
 
 void Lcd_WriteData_16Bit(u16 Data)
-{	
+{
     LCD_CS_CLR;
-    LCD_RS_SET;  
+    LCD_RS_SET;
     SPI_WriteByte(Data>>8);
     SPI_WriteByte(Data);
     LCD_CS_SET;
 }
 
+void LCD_DrawPoint(u16 x,u16 y)
+{
+	LCD_SetCursor(x,y);
+	Lcd_WriteData_16Bit(POINT_COLOR);
+}
+
 void LCD_Clear(u16 Color)
 {
-    unsigned int i,m;  
-    LCD_SetWindows(0,0,lcddev.width-1,lcddev.height-1);   
+    unsigned int i,m;
+    LCD_SetWindows(0,0,lcddev.width-1,lcddev.height-1);
     LCD_CS_CLR;
     LCD_RS_SET;
     for(i=0;i<lcddev.height;i++)
     {
     for(m=0;m<lcddev.width;m++)
-    {	
+    {
         Lcd_WriteData_16Bit(Color);
     }
     }
     LCD_CS_SET;
-} 
+}
 
 void LCD_Init(void)
 {
@@ -188,7 +192,7 @@ void LCD_Init(void)
 	LCD_WR_REG(0xC7);   //VCOM control 2
 	LCD_WR_DATA(0XB7);  //1st: B7 : nVM=1, VCOMH=VMH-9, VCOML=VML-9
 	LCD_WR_REG(0x36);   //Memory Access Control
-	LCD_WR_DATA(0x08);  //08 : MY=MX=MV=ML=0, BGR=1, MH=0 : 
+	LCD_WR_DATA(0x08);  //08 : MY=MX=MV=ML=0, BGR=1, MH=0 :
 	LCD_WR_REG(0x3A);   //COLMOD: Pixel Format Set
 	LCD_WR_DATA(0x55);  //55 : RGB=16bits/pixel, MCU=16bits/pixel
 	LCD_WR_REG(0xB1);   //Frame Rate Control
@@ -203,36 +207,36 @@ void LCD_Init(void)
 	LCD_WR_DATA(0x01);  //01 : Gamma curve 1
 	LCD_WR_REG(0xE0);   //Positive Gamma Correction
 	LCD_WR_DATA(0x0F);  //
-	LCD_WR_DATA(0x1D); 
-	LCD_WR_DATA(0x1A); 
-	LCD_WR_DATA(0x0A); 
-	LCD_WR_DATA(0x0D); 
-	LCD_WR_DATA(0x07); 
-	LCD_WR_DATA(0x49); 
-	LCD_WR_DATA(0X66); 
-	LCD_WR_DATA(0x3B); 
-	LCD_WR_DATA(0x07); 
-	LCD_WR_DATA(0x11); 
-	LCD_WR_DATA(0x01); 
-	LCD_WR_DATA(0x09); 
-	LCD_WR_DATA(0x05); 
-	LCD_WR_DATA(0x04); 		 
+	LCD_WR_DATA(0x1D);
+	LCD_WR_DATA(0x1A);
+	LCD_WR_DATA(0x0A);
+	LCD_WR_DATA(0x0D);
+	LCD_WR_DATA(0x07);
+	LCD_WR_DATA(0x49);
+	LCD_WR_DATA(0X66);
+	LCD_WR_DATA(0x3B);
+	LCD_WR_DATA(0x07);
+	LCD_WR_DATA(0x11);
+	LCD_WR_DATA(0x01);
+	LCD_WR_DATA(0x09);
+	LCD_WR_DATA(0x05);
+	LCD_WR_DATA(0x04);
 	LCD_WR_REG(0XE1);   //Negative Gamma Correction
-	LCD_WR_DATA(0x00); 
-	LCD_WR_DATA(0x18); 
-	LCD_WR_DATA(0x1D); 
-	LCD_WR_DATA(0x02); 
-	LCD_WR_DATA(0x0F); 
-	LCD_WR_DATA(0x04); 
-	LCD_WR_DATA(0x36); 
-	LCD_WR_DATA(0x13); 
-	LCD_WR_DATA(0x4C); 
-	LCD_WR_DATA(0x07); 
-	LCD_WR_DATA(0x13); 
-	LCD_WR_DATA(0x0F); 
-	LCD_WR_DATA(0x2E); 
-	LCD_WR_DATA(0x2F); 
-	LCD_WR_DATA(0x05); 
+	LCD_WR_DATA(0x00);
+	LCD_WR_DATA(0x18);
+	LCD_WR_DATA(0x1D);
+	LCD_WR_DATA(0x02);
+	LCD_WR_DATA(0x0F);
+	LCD_WR_DATA(0x04);
+	LCD_WR_DATA(0x36);
+	LCD_WR_DATA(0x13);
+	LCD_WR_DATA(0x4C);
+	LCD_WR_DATA(0x07);
+	LCD_WR_DATA(0x13);
+	LCD_WR_DATA(0x0F);
+	LCD_WR_DATA(0x2E);
+	LCD_WR_DATA(0x2F);
+	LCD_WR_DATA(0x05);
 	LCD_WR_REG(0x2B);   //Page Address Set
 	LCD_WR_DATA(0x00);
 	LCD_WR_DATA(0x00);
@@ -249,36 +253,41 @@ void LCD_Init(void)
 
 	// Uart_Printf("LCD_direction() start\n\r");
     LCD_direction(USE_HORIZONTAL); //LCD 표시 방향 설정
-    
-	LCD_Clear(BLUE);   // 전체화면 파랑
+
+	LCD_Clear(BLACK);   // 전체화면
 }
 
 void LCD_SetWindows(u16 xStar, u16 yStar,u16 xEnd,u16 yEnd)
-{	
-	LCD_WR_REG(lcddev.setxcmd);	
+{
+	LCD_WR_REG(lcddev.setxcmd);
 	LCD_WR_DATA(xStar>>8);
-	LCD_WR_DATA(0x00FF&xStar);		
+	LCD_WR_DATA(0x00FF&xStar);
 	LCD_WR_DATA(xEnd>>8);
 	LCD_WR_DATA(0x00FF&xEnd);
 
-	LCD_WR_REG(lcddev.setycmd);	
+	LCD_WR_REG(lcddev.setycmd);
 	LCD_WR_DATA(yStar>>8);
-	LCD_WR_DATA(0x00FF&yStar);		
+	LCD_WR_DATA(0x00FF&yStar);
 	LCD_WR_DATA(yEnd>>8);
 	LCD_WR_DATA(0x00FF&yEnd);
 
 	LCD_WriteRAM_Prepare();
 }
 
+void LCD_SetCursor(u16 Xpos, u16 Ypos)
+{
+	LCD_SetWindows(Xpos,Ypos,Xpos,Ypos);
+}
+
 void LCD_direction(u8 direction)
-{ 
+{
 			lcddev.setxcmd=0x2A;
 			lcddev.setycmd=0x2B;
 			lcddev.wramcmd=0x2C;
-	switch(direction){		  
-		case 0:						 	 		
+	switch(direction){
+		case 0:
 			lcddev.width=LCD_W;
-			lcddev.height=LCD_H;		
+			lcddev.height=LCD_H;
 			LCD_WriteReg(0x36,(1<<3)|(0<<6)|(0<<7));//BGR==1,MY==0,MX==0,MV==0
 		break;
 		case 1:
@@ -286,16 +295,87 @@ void LCD_direction(u8 direction)
 			lcddev.height=LCD_W;
 			LCD_WriteReg(0x36,(1<<3)|(0<<7)|(1<<6)|(1<<5));//BGR==1,MY==1,MX==0,MV==1
 		break;
-		case 2:						 	 		
+		case 2:
 			lcddev.width=LCD_W;
-			lcddev.height=LCD_H;	
+			lcddev.height=LCD_H;
 			LCD_WriteReg(0x36,(1<<3)|(1<<6)|(1<<7));//BGR==1,MY==0,MX==0,MV==0
 		break;
 		case 3:
 			lcddev.width=LCD_H;
 			lcddev.height=LCD_W;
 			LCD_WriteReg(0x36,(1<<3)|(1<<7)|(1<<5));//BGR==1,MY==1,MX==0,MV==1
-		break;	
+		break;
 		default:break;
-	}		
-}	 
+	}
+}
+
+void Help_Message_LCD(void)
+{
+	LCD_Fill(0,0,LCD_H/2,100,MOVE_HELP_BACK_COLOR);
+	POINT_COLOR = WHITE;
+	LCD_DrawLine(LCD_H/2+1,0,LCD_H/2+1,100);
+	LCD_Fill(LCD_H/2+2,0,LCD_H,100,LED_HELP_BACK_COLOR);
+
+	POINT_COLOR = HELP_FONT_COLOR;
+	BACK_COLOR = MOVE_HELP_BACK_COLOR;
+	u16 x = 0, y = 16;
+	LCD_ShowString(x,y*0,y,(u8*)("=== Move Control ==="),1);
+	LCD_ShowString(x,y*1,y,(u8*)("0-5:select SPEED"), 1);
+	LCD_ShowString(x,y*2,y,(u8*)("W:MOVE FWD|SPD UP"), 1);
+	LCD_ShowString(x,y*3,y,(u8*)("S:STOP"), 1);
+	LCD_ShowString(x,y*4,y,(u8*)("X:MOVE BWD|SPD DN"), 1);
+	LCD_ShowString(x,y*5,y,(u8*)("A,D:TURN L/R (Press)"), 1);
+
+	BACK_COLOR = LED_HELP_BACK_COLOR;
+	x = LCD_H/2+4;
+	LCD_ShowString(x,y*0,y,(u8*)("= LED&LCD Control ="),1);
+	LCD_ShowString(x,y*1,y,(u8*)("L:LED"),1);
+	LCD_ShowString(x,y*2,y,(u8*)("Y:EMERGENCY"),1);
+	LCD_ShowString(x,y*3,y,(u8*)("O:AUTO LED"),1);
+	LCD_ShowString(x,y*4,y-1,(u8*)("P:LCD AUTO BRIGHTNESS"),1);
+	LCD_ShowString(x,y*5,y,(u8*)("[,]:BRIGHTNESS -/+"),1);
+
+	BACK_COLOR = LIGHTBLUE;
+	LCD_ShowString(x+105,y*1+8,y,(u8*)("TOGGLE"),1);
+	LCD_ShowString(x+105,y*2+8,y,(u8*)("  /OFF"),1);
+	POINT_COLOR = RED;
+	LCD_ShowString(x+105,y*2+8,y,(u8*)("ON"),1);
+
+	POINT_COLOR = LIGHTBLUE;
+	LCD_DrawRectangle(x+104,y*1+8,x+105+48,y*3+8-1);
+	u16 sw, sh, ew, eh;
+	sw = x+50; sh = y*1+8; ew = x+104; eh = sh;
+	LCD_DrawLine(sw, sh, ew, eh);
+	Fill_Triangel(sw, sh, sw+3, sh+3, sw+3, sh-3);
+	sw = x+95; sh = eh = y*2+8;
+	LCD_DrawLine(sw, sh, ew, eh);
+	Fill_Triangel(sw, sh, sw+3, sh+3, sw+3, sh-3);
+	sw = x+90; sh = eh = y*3+8-1;
+	LCD_DrawLine(sw, sh, ew, eh);
+	Fill_Triangel(sw, sh, sw+3, sh+3, sw+3, sh-3);
+	sw = x+148; sh = eh = y*4+8; ew = x+105+48;
+	LCD_DrawLine(sw, sh, ew, eh);
+	Fill_Triangel(sw, sh, sw+3, sh+3, sw+3, sh-3);
+	sw = ew = x+105+48; sh = y*1+8; eh = y*4+8;
+	LCD_DrawLine(sw, sh, ew, eh);
+
+	LCD_LED_Toggle_Info();
+}
+
+void LCD_LED_Toggle_Info(void)
+{
+	u16 x = LCD_H/2+4;
+	u16 y = 16;
+	BACK_COLOR = LED_HELP_BACK_COLOR;
+
+	POINT_COLOR = (LIGHT_ON)?RED:WHITE;
+	LCD_ShowString(x,y*1,y,(u8*)("L"),1);
+	POINT_COLOR = (EMERGENCY)?RED:WHITE;
+	LCD_ShowString(x,y*2,y,(u8*)("Y"),1);
+	POINT_COLOR = (AUTO_LIGHT)?RED:WHITE;
+	LCD_ShowString(x,y*3,y,(u8*)("O"),1);
+	POINT_COLOR = (LCD_AUTO_BRIGHTNESS)?RED:WHITE;
+	LCD_ShowString(x,y*4,y,(u8*)("P"),1);
+
+
+}

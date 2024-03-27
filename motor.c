@@ -18,7 +18,7 @@ void TIM2_Repeat(void)
 	TIM2->CR1 = (0<<7)|(1<<4)|(0<<3);
     // Timer 주파수가 TIM2_FREQ가 되도록 PSC 설정
 	TIM2->PSC = (unsigned int)(TIMXCLK/(double)TIM2_FREQ + 0.5) - 1;
-    // PWM 주기 10ms/5 = 2ms = 500Hz (최적화필요)
+    // PWM 주기 10ms/5 = 2ms = 500Hz
 	// TIM2->ARR = TIM2_PLS_OF_10ms / 5 - 1;
     // define으로 계산
     TIM2->ARR = (TIM2_UE_PERIOD / TIM2_TICK) - 1;
@@ -33,6 +33,7 @@ void TIM2_Repeat(void)
     // Macro_Set_Bit(TIM2->CCMR1, 3);
     // CC1S : output
 	// Macro_Write_Block(TIM2->CCMR1, 0x3, 0x0, 0);
+    // 한번에 Write
     TIM2->CCMR1 = 0x6868;
     TIM2->CCMR2 = 0x6868;
     // OUT pin : active low, output enable
@@ -49,7 +50,6 @@ void TIM2_Repeat(void)
 void Motor_Init(void)
 {
 	TIM2_Repeat();
-    Uart_Printf("========== Engine Start ==========\n\r\n\r");
 }
 
 struct _SPEED
@@ -66,28 +66,4 @@ void Motor_Drive(int dir, int spd)
     TIM2->CCR2 = TIM2->ARR * (10-gear[dir+1][spd+2].lr) / 10;
     TIM2->CCR3 = TIM2->ARR * (10-gear[dir+1][spd+2].rf) / 10;
     TIM2->CCR4 = TIM2->ARR * (10-gear[dir+1][spd+2].rr) / 10;
-
-    // 구조체 없이 계산식으로 만들기	
-    // int lf=0, lr=0, rf=0, rr=0;
-
-    // if (spd == 0)
-    // {
-    //     lf = lr = rf = rr = 0;
-    // }
-    // else if (spd > 0)
-    // {
-    //     lf = rf = spd + 5;
-    //     lr = rr = 0;
-    // }
-    // else if (spd < 0)
-    // {
-    //     lf = rf = 0;
-    //     lr = rr = -spd * 2 + 4;
-    // }
-
-    // if (dir == -1)
-    // {
-    //     //구현
-    // }
-
 }
