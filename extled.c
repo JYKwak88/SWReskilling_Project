@@ -9,7 +9,7 @@
 */
 #include "device_driver.h"
 
-void H_T_LED_Init(void)
+void H_R_LED_Init(void)
 {
     // Head, Rear : GPIO
     Macro_Set_Bit(RCC->APB2ENR, 2);     // GPIOA Clock
@@ -23,7 +23,7 @@ void H_T_LED_Init(void)
 
     // Left, Right blinking interrupt 용 TIM3
     // Left, Right LED에 대해 인터럽트 설정, 인터럽트 핸들러에서 반전
-    
+
 }
 void HeadLED_On(void) { Macro_Clear_Bit(GPIOA->ODR, 4); }
 void HeadLED_Off(void) { Macro_Set_Bit(GPIOA->ODR, 4); }
@@ -31,7 +31,7 @@ void ReverseLED_On(void) { Macro_Clear_Bit(GPIOA->ODR, 5); }
 void ReverseLED_Off(void) { Macro_Set_Bit(GPIOA->ODR, 5); }
 
 void TailLED_Init(void)
-{    
+{
     // Tail(미등 구현)
     Macro_Set_Bit(RCC->APB1ENR, 2); // TIM4 EN
 	Macro_Set_Bit(RCC->APB2ENR, 3); // GPIOB EN

@@ -3,14 +3,14 @@
 void Wait_Bluetooth_Connect(void)
 {
     LCD_Clear(BLACK);
-    POINT_COLOR = SKYBLUE;
     u16 t;
+    POINT_COLOR = SKYBLUE;
     for (t = 10; t <= 20; t++)
     {
         LCD_DrawRectangle(t,t,LCD_H-t,LCD_W-t);
     }
 
-    LCD_ShowString(t+3, t+1, 16, (u8*)"Wait for Bluetooth Connecting...", 1);
+    LCD_ShowString(t+3, t+1,      16, (u8*)"Wait for Bluetooth Connecting...", 1);
     LCD_ShowString(t+3, t+1+18*2, 16, (u8*)"Bluetooth NAME : HC-06", 1);
     LCD_ShowString(t+3, t+1+18*3, 16, (u8*)"Bluetooth PIN  : 1234", 1);
     LCD_ShowString(t+3, t+1+18*5, 16, (u8*)"1. Connect bluetooth", 1);
@@ -18,8 +18,8 @@ void Wait_Bluetooth_Connect(void)
     LCD_ShowString(t+3, t+1+18*7, 16, (u8*)"3. and send [S] key", 1);
 
     POINT_COLOR = WHITE;
-    LCD_ShowString(t+3, t+1+18*9, 16,  (u8*)"       LGE SW Reskilling Program", 1);
-    LCD_ShowString(t+3, t+1+18*10, 16, (u8*)"           jaeyoung.kwak@lge.com", 1);
+    LCD_ShowString(t+3+8*8,  t+1+18*9,  16, (u8*)"LGE SW Reskilling Program", 1);
+    LCD_ShowString(t+3+8*12, t+1+18*10, 16, (u8*)"jaeyoung.kwak@lge.com", 1);
 
 
 
@@ -79,7 +79,7 @@ void Stop_Car(void)
     DRIVE_STATUS = 0;
 }
 
-void Turn_Car(char input)
+void Turn_Car(u8 input)
 {
     if (input == 'a')
     {
@@ -95,17 +95,16 @@ void Turn_Car(char input)
     Motor_Drive(DIRECTION, SPEED);
 }
 
-void Drive_Car(char input)
+void Drive_Car(u8 input)
 {
     switch(input)
     {
     case 'a': case 'd':
-        Turn_Car(input);
-        return;
+        Turn_Car(input); return;
     case 's': case '0':
         DRIVE_STATUS = 0; break;
     case '1': case '2': case '3': case '4': case '5':
-        SPEED = (int)(input - '0'); break;
+        SPEED = input - '0'; break;
     case 'w':
         if (DRIVE_STATUS == 1)
         {

@@ -1,11 +1,11 @@
 /**
   ******************************************************************************
-  * @file    Project/STM32F10x_StdPeriph_Template/stm32f10x_it.c 
+  * @file    Project/STM32F10x_StdPeriph_Template/stm32f10x_it.c
   * @author  MCD Application Team
   * @version V3.5.0
   * @date    08-April-2011
   * @brief   Main Interrupt Service Routines.
-  *          This file provides template for all exceptions handler and 
+  *          This file provides template for all exceptions handler and
   *          peripherals interrupt service routine.
   ******************************************************************************
   * @attention
@@ -412,18 +412,18 @@ void DMA1_Channel7_IRQHandler(void)
  * Output         : None
  * Return         : None
  *******************************************************************************/
-volatile int LIGHT_LEVEL = 0;
-volatile int NIGHT = 0;
+volatile u32 EXT_LIGHT_LEVEL = 0;
+volatile u8 NIGHT = 0;
 void ADC1_2_IRQHandler(void)
 {
-  LIGHT_LEVEL = ADC1->DR;
-  // Uart_Printf("LIGHT LEVEL = 0x%x\n\r", LIGHT_LEVEL);
-  if (NIGHT == 1 && LIGHT_LEVEL > 0xb00)
+  EXT_LIGHT_LEVEL = ADC1->DR;
+  // Uart_Printf("LIGHT LEVEL = 0x%x\n\r", EXT_LIGHT_LEVEL);
+  if (NIGHT == 1 && EXT_LIGHT_LEVEL > 0xb00)
   {
     NIGHT = 0;
     LED_Control();
   }
-  else if (NIGHT == 0 && LIGHT_LEVEL < 0x900)
+  else if (NIGHT == 0 && EXT_LIGHT_LEVEL < 0x900)
   {
     NIGHT = 1;
     LED_Control();
@@ -584,11 +584,10 @@ void TIM3_IRQHandler(void)
  * Output         : None
  * Return         : None
  *******************************************************************************/
-volatile int EMERGENCY = 0;
-volatile int DIRECTION = 0;
-volatile int BLINK_CNT = 0;
-volatile int NO_INPUT_CNT = 0;
-volatile int CDS_WAIT_CNT = 0;
+volatile u8 EMERGENCY = 0;
+volatile u16 BLINK_CNT = 0;
+volatile s16 NO_INPUT_CNT = 0;
+volatile u8 CDS_WAIT_CNT = 0;
 void TIM4_IRQHandler(void)
 {
   BLINK_CNT++;
@@ -706,8 +705,8 @@ void SPI2_IRQHandler(void)
  * Output         : None
  * Return         : None
  *******************************************************************************/
-volatile int Uart1_Rx_In = 0;
-volatile char Uart1_Rx_Data = 0;
+volatile u8 Uart1_Rx_In = 0;
+volatile u8 Uart1_Rx_Data = 0;
 
 void USART1_IRQHandler(void)
 {
@@ -735,8 +734,8 @@ void USART2_IRQHandler(void)
  * Output         : None
  * Return         : None
  *******************************************************************************/
-volatile int Uart3_Rx_In = 0;
-volatile char Uart3_Rx_Data = 0;
+volatile u8 Uart3_Rx_In = 0;
+volatile u8 Uart3_Rx_Data = 0;
 void USART3_IRQHandler(void)
 {
 	Uart3_Rx_Data = (unsigned char)USART3->DR;

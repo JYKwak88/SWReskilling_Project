@@ -6,22 +6,34 @@
 #include "string.h"
 #include "lcddefine.h"
 
-extern volatile int Uart1_Rx_In;
-extern volatile char Uart1_Rx_Data;
-extern volatile int Uart3_Rx_In;
-extern volatile char Uart3_Rx_Data;
-extern volatile int DRIVE_STATUS;
-extern volatile int DIRECTION;
-extern volatile int SPEED;
-extern volatile int LIGHT_LEVEL;
-extern volatile int NIGHT;
-extern volatile int AUTO_LIGHT;
-extern volatile int LCD_AUTO_BRIGHTNESS;
-extern volatile int LCD_BR_LEVEL;
-extern volatile int EMERGENCY;
-extern volatile int BLINK_CNT;
-extern volatile int LIGHT_ON;
-extern volatile int NO_INPUT_CNT;
+// stm32f10x_it.c
+// USART1
+extern volatile u8 Uart1_Rx_In;
+extern volatile u8 Uart1_Rx_Data;
+// USART3
+extern volatile u8 Uart3_Rx_In;
+extern volatile u8 Uart3_Rx_Data;
+// ADC1_2
+extern volatile u32 EXT_LIGHT_LEVEL;
+extern volatile u8 NIGHT;
+// TIM4
+extern volatile u8 EMERGENCY;
+extern volatile u16 BLINK_CNT;
+extern volatile s16 NO_INPUT_CNT;
+extern volatile u8 CDS_WAIT_CNT;
+
+// main.c
+extern volatile enum _status DRIVE_STATUS;
+extern volatile enum _direction DIRECTION;
+extern volatile enum _speed SPEED;
+extern volatile u8 LIGHT_ON;
+extern volatile u8 AUTO_LIGHT;
+extern volatile u8 LCD_AUTO_BRIGHTNESS;
+extern volatile u32 LCD_BR_LEVEL;
+
+// clock.c
+void Clock_Init(void);
+
 // Uart.c
 // 개발중 Uart1, 실제구동 Uart3
 #if DEV
@@ -53,38 +65,21 @@ void Uart3_Printf(char *fmt,...);
 char Uart3_Get_Char(void);
 char Uart3_Get_Pressed(void);
 
-
-// Led.c
-void LED_Init(void);
-void LED_Display(unsigned int num);
-void LED_All_On(void);
-void LED_All_Off(void);
-
-// Clock.c
-void Clock_Init(void);
-
-// Key.c
-void Key_Poll_Init(void);
-int Key_Get_Pressed(void);
-void Key_Wait_Key_Released(void);
-int Key_Wait_Key_Pressed(void);
-void Key_ISR_Enable(int en);
-
 // SysTick.c
-void SysTick_Delay_ms(unsigned int msec);
+void SysTick_Delay_ms(u32 msec);
 
 // Timer.c
 
 // SysTick.c
-void SysTick_Delay_ms(unsigned int msec);
+void SysTick_Delay_ms(u32 msec);
 
 // motor.c
 void TIM2_Repeat(void);
 void Motor_Init(void);
-void Motor_Drive(int dir, int spd);
+void Motor_Drive(s8 dir, s8 spd);
 
 // extled.c
-void H_T_LED_Init(void);
+void H_R_LED_Init(void);
 void HeadLED_On(void);
 void HeadLED_Off(void);
 void ReverseLED_On(void);
@@ -107,9 +102,9 @@ void Print_State_Uart(void);
 void Forward_Car(void);
 void Backward_Car(void);
 void Stop_Car(void);
-void Turn_Car(char input);
+void Turn_Car(u8 input);
 
-void Drive_Car(char input);
+void Drive_Car(u8 input);
 
 // cds.c
 void CDS_Init(void);

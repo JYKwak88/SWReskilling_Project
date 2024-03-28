@@ -15,6 +15,9 @@
 #define STACK_BASE	(RAM_END + 1)
 #define STACK_SIZE	(STACK_BASE - STACK_LIMIT)
 
+enum _status{reverse=-1, idle=0, forward=1};
+enum _direction{left=-1, center=0, right=1};
+enum _speed{back2=-2, back=-1, stop=0, one, two, three, four, five};
 
 // motor.c
 #define TIM2_TICK         	(5) 				// usec

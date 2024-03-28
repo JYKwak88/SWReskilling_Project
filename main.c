@@ -10,28 +10,27 @@ static void Sys_Init(void)
 	SCB->SHCSR = 0;
 }
 
-volatile int SPEED;
-volatile int DRIVE_STATUS;
-volatile int LIGHT_ON = 0;
-volatile int AUTO_LIGHT = 1;
-volatile int LCD_AUTO_BRIGHTNESS = 1;
-volatile int LCD_BR_LEVEL = 0xb00;
+volatile enum _status DRIVE_STATUS = idle;
+volatile enum _direction DIRECTION = center;
+volatile enum _speed SPEED = stop;
+volatile u8 LIGHT_ON = 0;
+volatile u8 AUTO_LIGHT = 1;
+volatile u8 LCD_AUTO_BRIGHTNESS = 1;
+volatile u32 LCD_BR_LEVEL = 0xb00;
 
 void Main(void)
 {
-	enum _direction{left=-1, center=0, right=1};
-	enum _gear{back2=-2, back=-1, stop=0, one, two, three, four, five};
-	enum _status{reverse=-1, idle=0, forward=1};
+
 	Sys_Init();
-	char input = 0;
-	char pre_input = '0';
+	u8 input = 0;
+	u8 pre_input = '0';
 
 	DRIVE_STATUS = idle;
 	DIRECTION = center;
 	SPEED = stop;
 
 	Motor_Init();
-	H_T_LED_Init();
+	H_R_LED_Init();
 	TailLED_Init();
 	LED_Control();
 	CDS_Init();
@@ -70,7 +69,7 @@ void Main(void)
 			else
 			{
 				NO_INPUT_CNT = -1;
-				DIRECTION = 0;
+				DIRECTION = center;
 				Drive_Car(0);
 			}
 
@@ -80,7 +79,7 @@ void Main(void)
 				{
 				case 0:
 					NO_INPUT_CNT = -1;
-					DIRECTION = 0;
+					DIRECTION = center;
 				case 's': case '0':
 				case '1': case '2': case '3': case '4': case '5':
 				case 'w':
@@ -90,27 +89,42 @@ void Main(void)
 					break;
 
 				case 'l':
-					LIGHT_ON ^= 1; Uart_Printf("LIGHT_ON = %d\n\r", LIGHT_ON); LCD_LED_Toggle_Info(); break;
+					LIGHT_ON ^= 1;
+					Uart_Printf("LIGHT_ON = %d\n\r", LIGHT_ON);
+					LCD_LED_Toggle_Info();
+					break;
 				case 'y':
-					EMERGENCY ^= 1; Uart_Printf("EMERGENCY = %d\n\r", EMERGENCY); LCD_LED_Toggle_Info();  break;
+					EMERGENCY ^= 1;
+					Uart_Printf("EMERGENCY = %d\n\r", EMERGENCY);
+					LCD_LED_Toggle_Info();
+					break;
 				case 'o':
-					AUTO_LIGHT ^= 1; Uart_Printf("AUTO_LIGHT = %d\n\r", AUTO_LIGHT); LCD_LED_Toggle_Info();  break;
+					AUTO_LIGHT ^= 1;
+					Uart_Printf("AUTO_LIGHT = %d\n\r", AUTO_LIGHT);
+					LCD_LED_Toggle_Info();
+					break;
 
 				case 'p':
-					LCD_AUTO_BRIGHTNESS ^= 1; Uart_Printf("LCD_AUTO_BRIGHTNESS = %d\n\r", LCD_AUTO_BRIGHTNESS); LCD_LED_Toggle_Info(); break;
+					LCD_AUTO_BRIGHTNESS ^= 1;
+					Uart_Printf("LCD_AUTO_BRIGHTNESS = %d\n\r", LCD_AUTO_BRIGHTNESS);
+					LCD_LED_Toggle_Info();
+					break;
 				case '[':
-					LCD_AUTO_BRIGHTNESS = 0; LCD_LED_Toggle_Info();
+					LCD_AUTO_BRIGHTNESS = 0;
 					if (LCD_BR_LEVEL > 0) LCD_BR_LEVEL--;
 					Uart_Printf("LCD_AUTO_BRIGHTNESS DISABLE, LCD_BL_LEVEL = %d\n\r", LCD_BR_LEVEL);
+					LCD_LED_Toggle_Info();
 					break;
 				case ']':
-					LCD_AUTO_BRIGHTNESS = 0; LCD_LED_Toggle_Info();
+					LCD_AUTO_BRIGHTNESS = 0;
 					if (LCD_BR_LEVEL < 100) LCD_BR_LEVEL++;
 					Uart_Printf("LCD_AUTO_BRIGHTNESS DISABLE, LCD_BL_LEVEL = %d\n\r", LCD_BR_LEVEL);
+					LCD_LED_Toggle_Info();
 					break;
 
 				case 'h':
-					Help_Message_Uart(); break;
+					Help_Message_Uart();
+					break;
 				default:
 					Uart_Printf("[%c] is Wrong Input\n\r", input);
     				Uart_Printf("Press 'H' key if you see the key guide\n\r");
@@ -126,7 +140,7 @@ void Main(void)
 
 		if (LCD_AUTO_BRIGHTNESS)
 		{
-			LCD_BR_LEVEL = LIGHT_LEVEL * 100 / 0xfff;
+			LCD_BR_LEVEL = EXT_LIGHT_LEVEL * 100 / 0xfff;
 		}
 		TIM4->CCR1 = TIM4->ARR * LCD_BR_LEVEL / 100;
 
