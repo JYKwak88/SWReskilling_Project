@@ -609,7 +609,7 @@ void TIM4_IRQHandler(void)
     BLINK_CNT = 0;
   }
 
-  if (NO_INPUT_CNT > 700000/TIM4_UE_PERIOD)
+  if (NO_INPUT_CNT > 300000/TIM4_UE_PERIOD)
   {
     Uart_Rx_In = 1;
     Uart_Rx_Data = 0;
@@ -619,7 +619,7 @@ void TIM4_IRQHandler(void)
 	Macro_Clear_Bit(TIM4->SR, 0);
 	NVIC_ClearPendingIRQ(TIM4_IRQn);
 
-  if (CDS_WAIT_CNT > 100000/TIM4_UE_PERIOD)
+  if (CDS_WAIT_CNT > 20000/TIM4_UE_PERIOD)  // ADC 트리거를 자주 할 수록, BLU 변화가 부드러워짐
   {
     Macro_Set_Bit(ADC1->CR2, 22); 					// CDS Start (SW Trigger, EXTTRIG==1 일때만 됨)
     CDS_WAIT_CNT = 0;

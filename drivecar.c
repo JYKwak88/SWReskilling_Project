@@ -34,7 +34,7 @@ void Wait_Bluetooth_Connect(void)
 
 void Help_Message_Uart(void)
 {
-    Uart_Printf("= Move Control \n\r");
+    Uart_Printf("= Move Control =\n\r");
     Uart_Printf("0:stop          |  1~5:select fwd speed   |\n\r");
     Uart_Printf("                |  w:go forward, speed++  |\n\r");
     Uart_Printf("a:turn left     |  s:stop                 |  d:turn right\n\r");
@@ -57,7 +57,7 @@ void Forward_Car(void)
     if (SPEED <= 2)
     {
         Motor_Drive(0, 5);
-        SysTick_Delay_ms(100);
+        SysTick_Delay_ms(50);
     }
     Motor_Drive(DIRECTION, SPEED);
     DRIVE_STATUS = 1;
@@ -66,7 +66,7 @@ void Forward_Car(void)
 void Backward_Car(void)
 {
     Motor_Drive(0, -2);
-    SysTick_Delay_ms(100);
+    SysTick_Delay_ms(50);
     SPEED = -1;
     Motor_Drive(DIRECTION, SPEED);
     DRIVE_STATUS = -1;
@@ -91,7 +91,7 @@ void Turn_Car(u8 input)
         Uart_Printf("TURN RIGHT\n\r");
         DIRECTION = 1;
     }
-    // if (DRIVE_STATUS == 0) return;
+
     Motor_Drive(DIRECTION, SPEED);
 }
 

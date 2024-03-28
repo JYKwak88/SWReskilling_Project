@@ -16,7 +16,7 @@ volatile enum _speed SPEED = stop;
 volatile u8 LIGHT_ON = 0;
 volatile u8 AUTO_LIGHT = 1;
 volatile u8 LCD_AUTO_BRIGHTNESS = 1;
-volatile u32 LCD_BR_LEVEL = 0xb00;
+volatile u32 LCD_BL_LEVEL = 0;
 
 void Main(void)
 {
@@ -70,7 +70,6 @@ void Main(void)
 			{
 				NO_INPUT_CNT = -1;
 				DIRECTION = center;
-				Drive_Car(0);
 			}
 
 			if (input != pre_input)
@@ -111,14 +110,14 @@ void Main(void)
 					break;
 				case '[':
 					LCD_AUTO_BRIGHTNESS = 0;
-					if (LCD_BR_LEVEL > 0) LCD_BR_LEVEL--;
-					Uart_Printf("LCD_AUTO_BRIGHTNESS DISABLE, LCD_BL_LEVEL = %d\n\r", LCD_BR_LEVEL);
+					if (LCD_BL_LEVEL > 0) LCD_BL_LEVEL--;
+					Uart_Printf("LCD_AUTO_BRIGHTNESS DISABLE, LCD_BL_LEVEL = %d\n\r", LCD_BL_LEVEL * 100 / LCD_BL_STEP);
 					LCD_LED_Toggle_Info();
 					break;
 				case ']':
 					LCD_AUTO_BRIGHTNESS = 0;
-					if (LCD_BR_LEVEL < 100) LCD_BR_LEVEL++;
-					Uart_Printf("LCD_AUTO_BRIGHTNESS DISABLE, LCD_BL_LEVEL = %d\n\r", LCD_BR_LEVEL);
+					if (LCD_BL_LEVEL < LCD_BL_STEP) LCD_BL_LEVEL++;
+					Uart_Printf("LCD_AUTO_BRIGHTNESS DISABLE, LCD_BL_LEVEL = %d\n\r", LCD_BL_LEVEL * 100 / LCD_BL_STEP);
 					LCD_LED_Toggle_Info();
 					break;
 
@@ -140,9 +139,10 @@ void Main(void)
 
 		if (LCD_AUTO_BRIGHTNESS)
 		{
-			LCD_BR_LEVEL = EXT_LIGHT_LEVEL * 100 / 0xfff;
+			TIM4->CCR1 = TIM4->ARR * EXT_LIGHT_LEVEL / 0xfff;
+			LCD_BL_LEVEL = LCD_BL_STEP - (EXT_LIGHT_LEVEL * 100 / LCD_BL_STEP / 0xfff);
 		}
-		TIM4->CCR1 = TIM4->ARR * LCD_BR_LEVEL / 100;
+		else TIM4->CCR1 = TIM4->ARR * LCD_BL_LEVEL / LCD_BL_STEP;
 
 
 	}

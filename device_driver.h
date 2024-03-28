@@ -29,7 +29,7 @@ extern volatile enum _speed SPEED;
 extern volatile u8 LIGHT_ON;
 extern volatile u8 AUTO_LIGHT;
 extern volatile u8 LCD_AUTO_BRIGHTNESS;
-extern volatile u32 LCD_BR_LEVEL;
+extern volatile u32 LCD_BL_LEVEL;
 
 // clock.c
 void Clock_Init(void);
@@ -135,8 +135,10 @@ void SPI2_Init(void);
 void LCD_GPIO_Init(void);
 void BLU_PWM_Init(void);
 
-#define LCD_RST_SET     GPIOA->BSRR=(1<<6)
-#define LCD_RST_CLR     GPIOA->BRR=(1<<6)
+#define LCD_RST_SET     GPIOA->BSRR=(1<<11)
+#define LCD_RST_CLR     GPIOA->BRR=(1<<11)
+// #define LCD_RST_SET     GPIOA->BSRR=(1<<6)
+// #define LCD_RST_CLR     GPIOA->BRR=(1<<6)
 #define LCD_CS_SET      GPIOB->BSRR=(1<<12)
 #define LCD_CS_CLR      GPIOB->BRR=(1<<12)
 #define LCD_RS_SET      GPIOA->BSRR=(1<<7)

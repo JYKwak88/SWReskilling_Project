@@ -56,7 +56,8 @@ void LCD_GPIO_Init(void)
 // DC/RS        PA7
 // RST          PA6
 	Macro_Set_Area(RCC->APB2ENR, 0x3, 2);       // PA PB Enable
-    Macro_Write_Block(GPIOA->CRL, 0xf, 0x3, 24);            // PA6 GPO P-P 50MHz
+    // Macro_Write_Block(GPIOA->CRL, 0xf, 0x3, 24);            // PA6 GPO P-P 50MHz
+    Macro_Write_Block(GPIOA->CRH, 0xf, 0x3, 12);            // PA11 GPO P-P 50MHz
     Macro_Write_Block(GPIOA->CRL, 0xf, 0x3, 28);            // PA7 GPO P-P 50MHz
     // Macro_Write_Block(GPIOB->CRL, 0xf, 0x3, 20);            // PB5 GPO P-P 50MHz
 }
@@ -329,10 +330,8 @@ void Help_Message_LCD(void)
 	BACK_COLOR = LED_HELP_BACK_COLOR;
 	x = LCD_H/2+4;
 	LCD_ShowString(x,y*0,y,(u8*)("= LED&LCD Control ="),1);
-	LCD_ShowString(x,y*1,y,(u8*)("L:LED"),1);
-	LCD_ShowString(x,y*2,y,(u8*)("Y:EMERGENCY"),1);
-	LCD_ShowString(x,y*3,y,(u8*)("O:AUTO LED"),1);
-	LCD_ShowString(x,y*4,y-1,(u8*)("P:LCD AUTO BRIGHTNESS"),1);
+	LCD_LED_Toggle_Info();
+	POINT_COLOR = HELP_FONT_COLOR;
 	LCD_ShowString(x,y*5,y,(u8*)("[,]:BRIGHTNESS -/+"),1);
 
 	BACK_COLOR = LIGHTBLUE;
@@ -358,8 +357,6 @@ void Help_Message_LCD(void)
 	Fill_Triangel(sw, sh, sw+3, sh+3, sw+3, sh-3);
 	sw = ew = x+105+48; sh = y*1+8; eh = y*4+8;
 	LCD_DrawLine(sw, sh, ew, eh);
-
-	LCD_LED_Toggle_Info();
 }
 
 void LCD_LED_Toggle_Info(void)
@@ -369,13 +366,11 @@ void LCD_LED_Toggle_Info(void)
 	BACK_COLOR = LED_HELP_BACK_COLOR;
 
 	POINT_COLOR = (LIGHT_ON)?RED:WHITE;
-	LCD_ShowString(x,y*1,y,(u8*)("L"),1);
+	LCD_ShowString(x,y*1,y,(u8*)("L:LED"),1);
 	POINT_COLOR = (EMERGENCY)?RED:WHITE;
-	LCD_ShowString(x,y*2,y,(u8*)("Y"),1);
+	LCD_ShowString(x,y*2,y,(u8*)("Y:EMERGENCY"),1);
 	POINT_COLOR = (AUTO_LIGHT)?RED:WHITE;
-	LCD_ShowString(x,y*3,y,(u8*)("O"),1);
+	LCD_ShowString(x,y*3,y,(u8*)("O:AUTO LED"),1);
 	POINT_COLOR = (LCD_AUTO_BRIGHTNESS)?RED:WHITE;
-	LCD_ShowString(x,y*4,y,(u8*)("P"),1);
-
-
+	LCD_ShowString(x,y*4,y-1,(u8*)("P:LCD AUTO BRIGHTNESS"),1);
 }
