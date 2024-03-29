@@ -36,6 +36,8 @@ void Main(void)
 	CDS_Init();
 	Uart3_Init(9600);
 
+	Servo_Init();
+
 	LCD_Init();
 
 #if (!DEV)

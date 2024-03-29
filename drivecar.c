@@ -61,6 +61,7 @@ void Forward_Car(void)
     }
     Motor_Drive(DIRECTION, SPEED);
     DRIVE_STATUS = 1;
+    SEE_CENTER;
 }
 
 void Backward_Car(void)
@@ -85,11 +86,13 @@ void Turn_Car(u8 input)
     {
         Uart_Printf("TURN LEFT\n\r");
         DIRECTION = -1;
+        SEE_LEFT;
     }
     else if (input == 'd')
     {
         Uart_Printf("TURN RIGHT\n\r");
         DIRECTION = 1;
+        SEE_RIGHT;
     }
 
     Motor_Drive(DIRECTION, SPEED);

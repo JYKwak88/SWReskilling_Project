@@ -196,3 +196,9 @@ void Draw_LeftArrow(void);
 void Draw_RightArrow(void);
 
 extern const unsigned char Img_Speedmeter[1056];
+
+// ultrasonic.c
+#define SEE_LEFT	(TIM4->CCR3 = TIM4->ARR * 9.8 / 100)
+#define SEE_CENTER	(TIM4->CCR3 = TIM4->ARR * 6.7 / 100)
+#define SEE_RIGHT	(TIM4->CCR3 = TIM4->ARR * 4 / 100)
+void Servo_Init(void);
