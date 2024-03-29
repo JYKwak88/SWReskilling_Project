@@ -9,15 +9,16 @@ static void Sys_Init(void)
 	SCB->SHCSR = 0;
 }
 
-volatile enum _status DRIVE_STATUS = idle;
-volatile enum _direction DIRECTION = center;
-volatile enum _speed SPEED = stop;
-volatile u8 LIGHT_ON = 0;
-volatile u8 EMERGENCY = 0;
-volatile u8 AUTO_LIGHT = 1;
-volatile u8 LCD_AUTO_BRIGHTNESS = 1;
-volatile u8 LCD_BL_LEVEL = 0;
-// u8 METER_Z = 2;
+enum _status DRIVE_STATUS = idle;
+enum _direction DIRECTION = center;
+enum _speed SPEED = stop;
+u8 LIGHT_ON = 0;
+u8 EMERGENCY = 0;
+u8 AUTO_LIGHT = 1;
+u8 LCD_AUTO_BRIGHTNESS = 1;
+u8 LCD_BL_LEVEL = 0;
+u8 METER_Z = 2;
+
 void Main(void)
 {
 
@@ -50,16 +51,6 @@ void Main(void)
 	GUI_DrawSpeedmeter(METER_CENTER_X-METER_W/2, METER_CENTER_Y-METER_H/2, METER_COLOR, METER_BACK_COLOR);
 	Draw_LeftArrow();
 	Draw_RightArrow();
-
-	for (;;)
-	{
-		for (SPEED = -1; SPEED <=5; SPEED++)
-		{
-			Draw_SpeedGage();
-			while (!Uart_Rx_In);
-			Uart_Rx_In = 0;
-		}
-	}
 
 	for(;;)
 	{

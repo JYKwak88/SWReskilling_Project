@@ -33,8 +33,8 @@ void CDS_Start(void)
 	Macro_Set_Bit(ADC1->CR2, 22); 					// ADC Start
 }
 
-void CDS_Stop(void)
-{
-	Macro_Clear_Bit(ADC1->CR2, 20); 				// EXT Trigger Stop
-	Macro_Clear_Bit(ADC1->CR2, 22); 				// ADC Stop
-}
+// void CDS_Stop(void)
+// {
+// 	Macro_Clear_Bit(ADC1->CR2, 20); 				// EXT Trigger Stop
+// 	Macro_Clear_Bit(ADC1->CR2, 22); 				// ADC Stop
+// }

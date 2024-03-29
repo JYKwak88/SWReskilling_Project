@@ -7,8 +7,8 @@
 #define LED_HELP_BACK_COLOR LBBLUE
 #define METER_COLOR 0xa534
 #define METER_BACK_COLOR BLACK
-#define METER_Z (2)      // 1 or 2
-// extern u8 METER_Z;
+// #define METER_Z (2)      // 1 or 2
+extern u8 METER_Z;
 #define METER_W (96 * METER_Z)
 #define METER_H (88 * METER_Z)
 #define METER_CENTER_X (160)

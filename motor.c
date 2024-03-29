@@ -54,7 +54,7 @@ void Motor_Init(void)
 
 struct _SPEED
 {
-    int lf, lr, rf, rr;
+    u8 lf, lr, rf, rr;
 };
                             //spd  back2[-2]  back[-1]  stop[0]   one[1]    two[2]
 const struct _SPEED gear[3][8] = {{{0,8,8,0},{0,0,0,3},{0,5,5,0},{0,0,3,0},{0,0,4,0},{3,0,5,0},{4,0,7,0},{5,0,10,0}},   // left[-1]

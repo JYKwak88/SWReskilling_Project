@@ -133,4 +133,5 @@ void Drive_Car(u8 input)
     if (DRIVE_STATUS == 1) Forward_Car();
     else if (DRIVE_STATUS == -1) Backward_Car();
     else if (DRIVE_STATUS == 0) Stop_Car();
+    Draw_SpeedGage();
 }

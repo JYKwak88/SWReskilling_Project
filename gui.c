@@ -259,9 +259,6 @@ void Draw_LeftArrow(void)
 	POINT_COLOR = DARKGREEN;
 	Fill_Triangel(LEFT_X, LEFT_Y+ARROW_SIZE/2, LEFT_X+ARROW_SIZE/2, LEFT_Y, LEFT_X+ARROW_SIZE/2, LEFT_Y+ARROW_SIZE-1);
 	LCD_DrawFillRectangle(LEFT_X+ARROW_SIZE/2+1, LEFT_Y+ARROW_SIZE/4, LEFT_X+ARROW_SIZE-1, LEFT_Y+ARROW_SIZE*3/4-1);
-	// POINT_COLOR = ORANGE;
-	// Fill_Triangel(100, 120, 110, 110, 110, 130);
-	// LCD_DrawFillRectangle(110, 115, 130, 125);
 }
 
 void Draw_RightArrow(void)
@@ -269,9 +266,6 @@ void Draw_RightArrow(void)
 	POINT_COLOR = DARKGREEN;
 	Fill_Triangel(RIGHT_X+ARROW_SIZE-1, RIGHT_Y+ARROW_SIZE/2, RIGHT_X+ARROW_SIZE/2, RIGHT_Y, RIGHT_X+ARROW_SIZE/2, RIGHT_Y+ARROW_SIZE-1);
 	LCD_DrawFillRectangle(RIGHT_X, RIGHT_Y+ARROW_SIZE/4, RIGHT_X+ARROW_SIZE/2, RIGHT_Y+ARROW_SIZE*3/4-1);
-	// POINT_COLOR = ORANGE;
-	// Fill_Triangel(100, 120, 110, 110, 110, 130);
-	// LCD_DrawFillRectangle(110, 115, 130, 125);
 }
 
 
@@ -284,6 +278,7 @@ void GUI_Arrow(void)
 
 void GUI_DrawSpeedmeter(u16 x, u16 y, u16 fc, u16 bc)
 {
+    Draw_SpeedGage();
 	u16 i;
 	u8 j, k, l;
 	u16 x0=x;

@@ -1,6 +1,6 @@
 MEMORY
 {
-	ROM  (rx) : ORIGIN = 0x08003000, LENGTH = 52K
+	ROM  (rx) : ORIGIN = 0x08003000, LENGTH = 64K
 	RAM  (rwx) : ORIGIN = 0x20000000, LENGTH = 20K
 }
 
@@ -15,27 +15,27 @@ SECTIONS
 	{
 		crt0.o(.text)
 		*(.text)
-    	. = ALIGN(4); 
+    	. = ALIGN(4);
 	} > REGION_TEXT
 
 	.ARM.extab :
 	{
 		*(.ARM.extab* .gnu.linkonce.armextab.*)
-		. = ALIGN(4); 
+		. = ALIGN(4);
 	} > REGION_RODATA
 
 	.ARM.exidx :
 	{
 		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
-		. = ALIGN(4); 
+		. = ALIGN(4);
 	} > REGION_RODATA
 
 	.rodata :
 	{
-		__RO_BASE__ = .;	
+		__RO_BASE__ = .;
 		*(.rodata)
     	*(.rodata.*)
-    	. = ALIGN(8); 
+    	. = ALIGN(8);
     	__RO_LIMIT__ = .;
 	} > REGION_RODATA
 
@@ -44,21 +44,21 @@ SECTIONS
 		__RW_BASE__ = .;
 		*(.data)
     	*(.data.*)
-		. = ALIGN(4); 		
-		__RW_LIMIT__ = .;			
+		. = ALIGN(4);
+		__RW_LIMIT__ = .;
 	} > REGION_DATA
-	
+
 	__RW_SIZE__ = SIZEOF(.data);
 	__RW_LOAD_ADDR__ = LOADADDR(.data);
-	
+
 	.bss :
 	{
 		__ZI_BASE__ = .;
 		*(.bss)
-    	*(.bss.*)		
-		. = ALIGN(4); 		
+    	*(.bss.*)
+		. = ALIGN(4);
 		__ZI_LIMIT__ = .;
 	} > REGION_BSS
-	
-	__ZI_SIZE__ = SIZEOF(.bss);	
+
+	__ZI_SIZE__ = SIZEOF(.bss);
 }

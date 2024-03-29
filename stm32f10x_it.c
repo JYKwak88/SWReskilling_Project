@@ -413,7 +413,7 @@ void DMA1_Channel7_IRQHandler(void)
  * Return         : None
  *******************************************************************************/
 volatile u32 ILLUMINANCE = 0;
-volatile u8 NIGHT = 0;
+u8 NIGHT = 0;
 void ADC1_2_IRQHandler(void)
 {
   ILLUMINANCE = ADC1->DR;
@@ -584,9 +584,9 @@ void TIM3_IRQHandler(void)
  * Output         : None
  * Return         : None
  *******************************************************************************/
-volatile u16 BLINK_CNT = 0;
-volatile s16 NO_INPUT_CNT = 0;
-volatile u8 CDS_WAIT_CNT = 0;
+u16 BLINK_CNT = 0;
+s16 NO_INPUT_CNT = 0;
+u8 CDS_WAIT_CNT = 0;
 void TIM4_IRQHandler(void)
 {
   BLINK_CNT++;
