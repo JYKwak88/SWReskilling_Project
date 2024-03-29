@@ -190,10 +190,10 @@ void Fill_Triangel(u16 x0,u16 y0,u16 x1,u16 y1,u16 x2,u16 y2);
 void LCD_ShowChar(u16 x,u16 y,u16 fc, u16 bc, u8 num,u8 size,u8 mode);	// start x,y, font color, background color, ascii-code, font size, (0)overlying/(1)non-overlying
 void LCD_ShowString(u16 x,u16 y,u8 size,u8 *p,u8 mode);	// start x,y, font size, string pointer, (0)overlying/(1)non-overlying
 void LCD_ShowMonobmp(u16 x,u16 y,u16 fc, u16 bc, u8 x_size, u8 y_size, u8 mode);
-void GUI_DrawSpeedmeter(u16 x, u16 y, u16 fc, u16 bc, u8 mode);
-void GUI_DrawSpeedmeter_BIG(u16 x, u16 y, u16 fc, u16 bc, u8 mode);
+void GUI_DrawSpeedmeter(u16 x, u16 y, u16 fc, u16 bc);
 void Draw_LeftArrow(void);
 void Draw_RightArrow(void);
+void Draw_SpeedGage(void);
 
 extern const unsigned char Img_Speedmeter[1056];
 

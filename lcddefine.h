@@ -7,29 +7,33 @@
 #define LED_HELP_BACK_COLOR LBBLUE
 #define METER_COLOR 0xa534
 #define METER_BACK_COLOR BLACK
-#define METER_W (96)
-#define METER_H (88)
-#define METER_CENTER_X (161)
-#define METER_CENTER_Y (180)
-#define R_X
-#define R_Y
-#define ZERO_X
-#define ZERO_Y
-#define ONE_X
-#define ONE_Y
-#define TWO_X
-#define TWO_Y
-#define THREE_X
-#define THREE_Y
-#define FOUR_X
-#define FOUR_Y
-#define FIVE_X
-#define FIVE_Y
-#define LEFT_X (METER_CENTER_X - ARROW_SIZE - 20)
-#define LEFT_Y (METER_CENTER_Y - METER_H / 2 - ARROW_SIZE - 5)
-#define RIGHT_X (METER_CENTER_X + 20)
-#define RIGHT_Y (METER_CENTER_Y - METER_H / 2 - ARROW_SIZE - 5)
-#define ARROW_SIZE (25)
+#define METER_Z (2)      // 1 or 2
+// extern u8 METER_Z;
+#define METER_W (96 * METER_Z)
+#define METER_H (88 * METER_Z)
+#define METER_CENTER_X (160)
+#define METER_CENTER_Y (LCD_W - METER_H/2 - 10)
+#define METER_PIN_LEN   (22 * METER_Z)
+#define METER_PIN_OFFSET    (2 * METER_Z)
+#define R_X     (METER_CENTER_X - METER_PIN_LEN * 0.71)
+#define R_Y     (METER_CENTER_Y + METER_PIN_LEN * 0.71)
+#define ZERO_X  (METER_CENTER_X - METER_PIN_LEN)
+#define ZERO_Y  (METER_CENTER_Y)
+#define ONE_X   (METER_CENTER_X - METER_PIN_LEN * 0.71)
+#define ONE_Y   (METER_CENTER_Y - METER_PIN_LEN * 0.71)
+#define TWO_X   (METER_CENTER_X)
+#define TWO_Y   (METER_CENTER_Y - METER_PIN_LEN)
+#define THREE_X (METER_CENTER_X + METER_PIN_LEN * 0.71)
+#define THREE_Y (METER_CENTER_Y - METER_PIN_LEN * 0.71)
+#define FOUR_X  (METER_CENTER_X + METER_PIN_LEN)
+#define FOUR_Y  (METER_CENTER_Y)
+#define FIVE_X  (METER_CENTER_X + METER_PIN_LEN * 0.71)
+#define FIVE_Y  (METER_CENTER_Y + METER_PIN_LEN * 0.71)
+#define LEFT_X (METER_CENTER_X - ARROW_SIZE*2)
+#define LEFT_Y (METER_CENTER_Y - METER_H / 2 - ARROW_SIZE - (5 * METER_Z))
+#define RIGHT_X (METER_CENTER_X + ARROW_SIZE)
+#define RIGHT_Y (METER_CENTER_Y - METER_H / 2 - ARROW_SIZE - (5 * METER_Z))
+#define ARROW_SIZE (12 * METER_Z)
 
 #define WHITE       0xFFFF
 #define BLACK      	0x0000

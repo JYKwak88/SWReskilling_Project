@@ -254,41 +254,6 @@ void LCD_ShowString(u16 x,u16 y,u8 size,u8 *p,u8 mode)	// start x,y, font size, 
     }
 }
 
-void GUI_DrawSpeedmeter(u16 x, u16 y, u16 fc, u16 bc, u8 mode)
-{
-	u16 i;
-	u8 j;
-	u16 x0=x;
-	u16 colortemp=POINT_COLOR;
-	LCD_SetWindows(x,y,x+96-1,y+88-1);
-	for(i=0;i<1056;i++)
-	{
-		for(j=0;j<8;j++)
-		{
-			if(!mode)
-			{
-				if(Img_Speedmeter[i]&(0x80>>j)) Lcd_WriteData_16Bit(fc);
-				else Lcd_WriteData_16Bit(bc);
-			}
-			else
-			{
-				POINT_COLOR=fc;
-				if(Img_Speedmeter[i]&(0x80>>j))	LCD_DrawPoint(x,y);
-				x++;
-				if((x-x0)==96)
-				{
-					x=x0;
-					y++;
-					if (y%6 ==0) fc -= 0x0841;
-					break;
-				}
-			}
-		}
-	}
-	POINT_COLOR=colortemp;
-	LCD_SetWindows(0,0,lcddev.width-1,lcddev.height-1);
-}
-
 void Draw_LeftArrow(void)
 {
 	POINT_COLOR = DARKGREEN;
@@ -317,50 +282,61 @@ void GUI_Arrow(void)
 }
 
 
-void GUI_DrawSpeedmeter_BIG(u16 x, u16 y, u16 fc, u16 bc, u8 mode)
+void GUI_DrawSpeedmeter(u16 x, u16 y, u16 fc, u16 bc)
 {
 	u16 i;
-	u8 j;
+	u8 j, k, l;
 	u16 x0=x;
 	u16 colortemp=POINT_COLOR;
-	LCD_SetWindows(x,y,x+96*2-1,y+88*2-1);
+	LCD_SetWindows(x,y,x+96*METER_Z-1,y+88*METER_Z-1);
 	for(i=0;i<1056;i++)
 	{
 		for(j=0;j<8;j++)
 		{
-			if(!mode)
+			POINT_COLOR=fc;
+			if(Img_Speedmeter[i]&(0x80>>j))
 			{
-				if(Img_Speedmeter[i]&(0x80>>j))
+				for (k = 0; k < METER_Z; k++)
 				{
-					Lcd_WriteData_16Bit(fc);
-					Lcd_WriteData_16Bit(fc);
-				}
-				else
-				{
-					Lcd_WriteData_16Bit(bc);
-					Lcd_WriteData_16Bit(bc);
+					for (l = 0; l < METER_Z; l++)
+					{
+						LCD_DrawPoint(x+k,y+l);
+					}
 				}
 			}
-			else
-			{
-				POINT_COLOR=fc;
-				if(Img_Speedmeter[i]&(0x80>>j))
-				{
-					LCD_DrawPoint(x,y);LCD_DrawPoint(x+1,y);
-				}
-					x+=2;
+			x+=METER_Z;
 
-				if((x-x0)==96*2)
-				{
-					x=x0;
-					y+=2;
-					if (y%12 ==0) fc -= 0x0841;
-					break;
-				}
+			if((x-x0)==96*METER_Z)
+			{
+				x=x0;
+				y+=METER_Z;
+				if (y%(6*METER_Z) ==0) fc -= 0x0841;
+				break;
 			}
 		}
-
 	}
 	POINT_COLOR=colortemp;
 	LCD_SetWindows(0,0,lcddev.width-1,lcddev.height-1);
+}
+
+void Draw_SpeedGage(void)
+{
+	POINT_COLOR = METER_BACK_COLOR;
+	if (SPEED != -1 || SPEED != -2) Fill_Triangel(R_X, R_Y, METER_CENTER_X-METER_PIN_OFFSET, METER_CENTER_Y, METER_CENTER_X, METER_CENTER_Y+METER_PIN_OFFSET);	// R
+	if (SPEED != 0) Fill_Triangel(ZERO_X, ZERO_Y, METER_CENTER_X-METER_PIN_OFFSET*0.71, METER_CENTER_Y-METER_PIN_OFFSET*0.71, METER_CENTER_X-METER_PIN_OFFSET*0.71, METER_CENTER_Y+METER_PIN_OFFSET*0.71);	// 0
+	if (SPEED != 1) Fill_Triangel(ONE_X, ONE_Y, METER_CENTER_X, METER_CENTER_Y-METER_PIN_OFFSET, METER_CENTER_X-METER_PIN_OFFSET, METER_CENTER_Y);	// 1
+	if (SPEED != 2) Fill_Triangel(TWO_X, TWO_Y, METER_CENTER_X-METER_PIN_OFFSET*0.71, METER_CENTER_Y-METER_PIN_OFFSET*0.71, METER_CENTER_X+METER_PIN_OFFSET*0.71, METER_CENTER_Y-METER_PIN_OFFSET*0.71);	// 2
+	if (SPEED != 3) Fill_Triangel(THREE_X, THREE_Y, METER_CENTER_X, METER_CENTER_Y-METER_PIN_OFFSET, METER_CENTER_X+METER_PIN_OFFSET, METER_CENTER_Y);	// 3
+	if (SPEED != 4) Fill_Triangel(FOUR_X, FOUR_Y, METER_CENTER_X+METER_PIN_OFFSET*0.71+1, METER_CENTER_Y-METER_PIN_OFFSET*0.71, METER_CENTER_X+METER_PIN_OFFSET*0.71+1, METER_CENTER_Y+METER_PIN_OFFSET*0.71);	// 4
+	if (SPEED != 5) Fill_Triangel(FIVE_X, FIVE_Y, METER_CENTER_X, METER_CENTER_Y+METER_PIN_OFFSET, METER_CENTER_X+METER_PIN_OFFSET, METER_CENTER_Y);	// 5
+
+	POINT_COLOR = RED;
+	if (SPEED == -1 || SPEED == -2) Fill_Triangel(R_X, R_Y, METER_CENTER_X-METER_PIN_OFFSET, METER_CENTER_Y, METER_CENTER_X, METER_CENTER_Y+METER_PIN_OFFSET);	// R
+	if (SPEED == 0) Fill_Triangel(ZERO_X, ZERO_Y, METER_CENTER_X-METER_PIN_OFFSET*0.71, METER_CENTER_Y-METER_PIN_OFFSET*0.71, METER_CENTER_X-METER_PIN_OFFSET*0.71, METER_CENTER_Y+METER_PIN_OFFSET*0.71);	// 0
+	if (SPEED == 1) Fill_Triangel(ONE_X, ONE_Y, METER_CENTER_X, METER_CENTER_Y-METER_PIN_OFFSET, METER_CENTER_X-METER_PIN_OFFSET, METER_CENTER_Y);	// 1
+	if (SPEED == 2) Fill_Triangel(TWO_X, TWO_Y, METER_CENTER_X-METER_PIN_OFFSET*0.71, METER_CENTER_Y-METER_PIN_OFFSET*0.71, METER_CENTER_X+METER_PIN_OFFSET*0.71, METER_CENTER_Y-METER_PIN_OFFSET*0.71);	// 2
+	if (SPEED == 3) Fill_Triangel(THREE_X, THREE_Y, METER_CENTER_X, METER_CENTER_Y-METER_PIN_OFFSET, METER_CENTER_X+METER_PIN_OFFSET, METER_CENTER_Y);	// 3
+	if (SPEED == 4) Fill_Triangel(FOUR_X, FOUR_Y, METER_CENTER_X+METER_PIN_OFFSET*0.71+1, METER_CENTER_Y-METER_PIN_OFFSET*0.71, METER_CENTER_X+METER_PIN_OFFSET*0.71+1, METER_CENTER_Y+METER_PIN_OFFSET*0.71);	// 4
+	if (SPEED == 5) Fill_Triangel(FIVE_X, FIVE_Y, METER_CENTER_X, METER_CENTER_Y+METER_PIN_OFFSET, METER_CENTER_X+METER_PIN_OFFSET, METER_CENTER_Y);	// 5
+
 }

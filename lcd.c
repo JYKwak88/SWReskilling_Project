@@ -374,3 +374,4 @@ void LCD_LED_Toggle_Info(void)
 	POINT_COLOR = (LCD_AUTO_BRIGHTNESS)?RED:WHITE;
 	LCD_ShowString(x,y*4,y-1,(u8*)("P:LCD AUTO BRIGHTNESS"),1);
 }
+

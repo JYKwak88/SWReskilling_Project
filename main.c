@@ -17,7 +17,7 @@ volatile u8 EMERGENCY = 0;
 volatile u8 AUTO_LIGHT = 1;
 volatile u8 LCD_AUTO_BRIGHTNESS = 1;
 volatile u8 LCD_BL_LEVEL = 0;
-
+// u8 METER_Z = 2;
 void Main(void)
 {
 
@@ -46,12 +46,20 @@ void Main(void)
 #endif
 
 	Help_Message_Uart();
-	Help_Message_LCD();
-	GUI_DrawSpeedmeter(METER_CENTER_X-METER_W/2, METER_CENTER_Y-METER_H/2, METER_COLOR, METER_BACK_COLOR, 1);
-	// GUI_DrawSpeedmeter_BIG(30,30,METER_COLOR, METER_BACK_COLOR, 1);
+	// Help_Message_LCD();
+	GUI_DrawSpeedmeter(METER_CENTER_X-METER_W/2, METER_CENTER_Y-METER_H/2, METER_COLOR, METER_BACK_COLOR);
 	Draw_LeftArrow();
 	Draw_RightArrow();
 
+	for (;;)
+	{
+		for (SPEED = -1; SPEED <=5; SPEED++)
+		{
+			Draw_SpeedGage();
+			while (!Uart_Rx_In);
+			Uart_Rx_In = 0;
+		}
+	}
 
 	for(;;)
 	{
