@@ -34,4 +34,4 @@ enum _speed{back2=-2, back=-1, stop=0, one, two, three, four, five};
 #define TIM4_MAX	  		(0xffffu)
 
 // others
-#define LCD_BL_STEP     (100)    // 100을 n(최대100)단계로 나누어 표현 = LCD_BL_LEVEL의 최대값
+#define LCD_BL_STEP     (20)    // 100을 n(최대100)단계로 나누어 표현 = LCD_BL_LEVEL의 최대값
