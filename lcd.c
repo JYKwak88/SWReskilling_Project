@@ -316,51 +316,75 @@ void Screen_Init(void)
 
 	if (METER_Z == 1)
 	{
-	LCD_Fill(0,0,LCD_H/2,100,MOVE_HELP_BACK_COLOR);
-	POINT_COLOR = WHITE;
-	LCD_DrawLine(LCD_H/2+1,0,LCD_H/2+1,100);
-	LCD_Fill(LCD_H/2+2,0,LCD_H,100,LED_HELP_BACK_COLOR);
+		LCD_Fill(0,0,LCD_H/2,100,MOVE_HELP_BACK_COLOR);
+		POINT_COLOR = WHITE;
+		LCD_DrawLine(LCD_H/2+1,0,LCD_H/2+1,100);
+		LCD_Fill(LCD_H/2+2,0,LCD_H,100,LED_HELP_BACK_COLOR);
 
-	POINT_COLOR = HELP_FONT_COLOR;
-	BACK_COLOR = MOVE_HELP_BACK_COLOR;
-	u16 x = 0, y = 16;
-	LCD_ShowString(x,y*0,y,(u8*)("=== Move Control ==="),1);
-	LCD_ShowString(x,y*1,y,(u8*)("0-5:select SPEED"), 1);
-	LCD_ShowString(x,y*2,y,(u8*)("W:MOVE FWD|SPD UP"), 1);
-	LCD_ShowString(x,y*3,y,(u8*)("S:STOP"), 1);
-	LCD_ShowString(x,y*4,y,(u8*)("X:MOVE BWD|SPD DN"), 1);
-	LCD_ShowString(x,y*5,y,(u8*)("A,D:TURN L/R (Press)"), 1);
+		POINT_COLOR = HELP_FONT_COLOR;
+		BACK_COLOR = MOVE_HELP_BACK_COLOR;
+		u16 x = 0, y = 16;
+		LCD_ShowString(x,y*0,y,(u8*)("=== Move Control ==="),1);
+		LCD_ShowString(x,y*1,y,(u8*)("0-5:select SPEED"), 1);
+		LCD_ShowString(x,y*2,y,(u8*)("W:MOVE FWD|SPD UP"), 1);
+		LCD_ShowString(x,y*3,y,(u8*)("S:STOP"), 1);
+		LCD_ShowString(x,y*4,y,(u8*)("X:MOVE BWD|SPD DN"), 1);
+		LCD_ShowString(x,y*5,y,(u8*)("A,D:TURN L/R (Press)"), 1);
 
-	BACK_COLOR = LED_HELP_BACK_COLOR;
-	x = LCD_H/2+4;
-	LCD_ShowString(x,y*0,y,(u8*)("= LED&LCD Control ="),1);
-	LCD_LED_Toggle_Info();
-	POINT_COLOR = HELP_FONT_COLOR;
-	LCD_ShowString(x,y*5,y,(u8*)("[,]:BRIGHTNESS -/+"),1);
+		BACK_COLOR = LED_HELP_BACK_COLOR;
+		x = LCD_H/2+4;
+		LCD_ShowString(x,y*0,y,(u8*)("= LED&LCD Control ="),1);
+		LCD_LED_Toggle_Info();
+		POINT_COLOR = HELP_FONT_COLOR;
+		LCD_ShowString(x,y*5,y,(u8*)("[,]:BRIGHTNESS -/+"),1);
 
-	BACK_COLOR = LIGHTBLUE;
-	LCD_ShowString(x+105,y*1+8,y,(u8*)("TOGGLE"),1);
-	LCD_ShowString(x+105,y*2+8,y,(u8*)("  /OFF"),1);
-	POINT_COLOR = RED;
-	LCD_ShowString(x+105,y*2+8,y,(u8*)("ON"),1);
+		BACK_COLOR = LIGHTBLUE;
+		LCD_ShowString(x+105,y*1+8,y,(u8*)("TOGGLE"),1);
+		LCD_ShowString(x+105,y*2+8,y,(u8*)("  /OFF"),1);
+		POINT_COLOR = RED;
+		LCD_ShowString(x+105,y*2+8,y,(u8*)("ON"),1);
 
-	POINT_COLOR = LIGHTBLUE;
-	LCD_DrawRectangle(x+104,y*1+8,x+105+48,y*3+8-1);
-	u16 sw, sh, ew, eh;
-	sw = x+50; sh = y*1+8; ew = x+104; eh = sh;
-	LCD_DrawLine(sw, sh, ew, eh);
-	Fill_Triangel(sw, sh, sw+3, sh+3, sw+3, sh-3);
-	sw = x+95; sh = eh = y*2+8;
-	LCD_DrawLine(sw, sh, ew, eh);
-	Fill_Triangel(sw, sh, sw+3, sh+3, sw+3, sh-3);
-	sw = x+90; sh = eh = y*3+8-1;
-	LCD_DrawLine(sw, sh, ew, eh);
-	Fill_Triangel(sw, sh, sw+3, sh+3, sw+3, sh-3);
-	sw = x+148; sh = eh = y*4+8; ew = x+105+48;
-	LCD_DrawLine(sw, sh, ew, eh);
-	Fill_Triangel(sw, sh, sw+3, sh+3, sw+3, sh-3);
-	sw = ew = x+105+48; sh = y*1+8; eh = y*4+8;
-	LCD_DrawLine(sw, sh, ew, eh);
+		POINT_COLOR = LIGHTBLUE;
+		LCD_DrawRectangle(x+104,y*1+8,x+105+48,y*3+8-1);
+		u16 sw, sh, ew, eh;
+		sw = x+50; sh = y*1+8; ew = x+104; eh = sh;
+		LCD_DrawLine(sw, sh, ew, eh);
+		Fill_Triangel(sw, sh, sw+3, sh+3, sw+3, sh-3);
+		sw = x+95; sh = eh = y*2+8;
+		LCD_DrawLine(sw, sh, ew, eh);
+		Fill_Triangel(sw, sh, sw+3, sh+3, sw+3, sh-3);
+		sw = x+90; sh = eh = y*3+8-1;
+		LCD_DrawLine(sw, sh, ew, eh);
+		Fill_Triangel(sw, sh, sw+3, sh+3, sw+3, sh-3);
+		sw = x+148; sh = eh = y*4+8; ew = x+105+48;
+		LCD_DrawLine(sw, sh, ew, eh);
+		Fill_Triangel(sw, sh, sw+3, sh+3, sw+3, sh-3);
+		sw = ew = x+105+48; sh = y*1+8; eh = y*4+8;
+		LCD_DrawLine(sw, sh, ew, eh);
+	}
+	else if (METER_Z == 2)
+	{
+		LCD_Fill(0,0,48-1,79,MOVE_HELP_BACK_COLOR);
+		POINT_COLOR = WHITE;
+		LCD_Fill(0,80,48-1,208-1,LED_HELP_BACK_COLOR);
+
+		POINT_COLOR = HELP_FONT_COLOR;
+		BACK_COLOR = MOVE_HELP_BACK_COLOR;
+		u16 x = 0, y = 16;
+		LCD_ShowString(x+8,   y*0,y,(u8*)("MOVE"),1);
+		LCD_ShowString(x+12, y*1,y,(u8*)("0-5"), 1);
+		LCD_ShowString(x+20,y*2,y,(u8*)("W"), 1);
+		LCD_ShowString(x+4, y*3,y,(u8*)("A S D"), 1);
+		LCD_ShowString(x+20,y*4,y,(u8*)("X"), 1);
+
+		BACK_COLOR = LED_HELP_BACK_COLOR;
+		LCD_ShowString(x+4, y*5,y,(u8*)("=LED="),1);
+
+		LCD_ShowString(x+4, y*9, y,(u8*)("=LCD="),1);
+		LCD_ShowString(x,   y*11,y,(u8*)("[]:-/+"),1);
+		LCD_ShowString(x+36,y*12,y,(u8*)("%"),1);
+
+		LCD_LED_Toggle_Info();
 	}
 
 	GUI_DrawSpeedmeter(METER_CENTER_X-METER_W/2, METER_CENTER_Y-METER_H/2, METER_COLOR, METER_BACK_COLOR);
@@ -369,17 +393,56 @@ void Screen_Init(void)
 
 void LCD_LED_Toggle_Info(void)
 {
-	u16 x = LCD_H/2+4;
+	u16 x;
 	u16 y = 16;
 	BACK_COLOR = LED_HELP_BACK_COLOR;
+	if (METER_Z == 1)
+	{
+		x = LCD_H/2+4;
 
-	POINT_COLOR = (LIGHT_ON)?RED:WHITE;
-	LCD_ShowString(x,y*1,y,(u8*)("L:LED"),1);
-	POINT_COLOR = (EMERGENCY)?RED:WHITE;
-	LCD_ShowString(x,y*2,y,(u8*)("Y:EMERGENCY"),1);
-	POINT_COLOR = (AUTO_LIGHT)?RED:WHITE;
-	LCD_ShowString(x,y*3,y,(u8*)("O:AUTO LED"),1);
-	POINT_COLOR = (LCD_AUTO_BRIGHTNESS)?RED:WHITE;
-	LCD_ShowString(x,y*4,y-1,(u8*)("P:LCD AUTO BRIGHTNESS"),1);
+		POINT_COLOR = (LIGHT_ON)?RED:WHITE;
+		LCD_ShowString(x,y*1,y,(u8*)("L:LED"),1);
+		POINT_COLOR = (EMERGENCY)?RED:WHITE;
+		LCD_ShowString(x,y*2,y,(u8*)("Y:EMERGENCY"),1);
+		POINT_COLOR = (AUTO_LIGHT)?RED:WHITE;
+		LCD_ShowString(x,y*3,y,(u8*)("O:AUTO LED"),1);
+		POINT_COLOR = (LCD_AUTO_BRIGHTNESS)?RED:WHITE;
+		LCD_ShowString(x,y*4,y-1,(u8*)("P:LCD AUTO BRIGHTNESS"),1);
+	}
+	else if (METER_Z == 2)
+	{
+		x = 0;
+
+		if (LIGHT_ON == 1)
+		{
+			POINT_COLOR = RED;
+			LCD_ShowString(x,y*6,y,(u8*)("L:OFF"),0);
+		}
+		else if (LIGHT_ON == 0)
+		{
+			POINT_COLOR = WHITE;
+			LCD_ShowString(x,y*6,y,(u8*)("L:ON "),0);
+		}
+		POINT_COLOR = (EMERGENCY)?RED:WHITE;
+		LCD_ShowString(x,y*7,y,(u8*)("Y:EMER"),1);
+		POINT_COLOR = (AUTO_LIGHT)?RED:WHITE;
+		LCD_ShowString(x,y*8,y,(u8*)("O:AUTO"),1);
+		POINT_COLOR = (LCD_AUTO_BRIGHTNESS)?RED:WHITE;
+		LCD_ShowString(x,y*10,y,(u8*)("P:AUTO"),1);
+	}
 }
 
+void Show_Brightness(void)
+{
+	POINT_COLOR = HELP_FONT_COLOR;
+	BACK_COLOR = LED_HELP_BACK_COLOR;
+	u8 br[4] = "000";
+	u16 br100 = LCD_BL_LEVEL * 100 / LCD_BL_STEP;
+
+	br[2] = br100 % 10 + '0';
+	br[1] = br100 / 10 % 10 + '0';
+	if (br100 == 100) br[0] = '1';
+	else br[0] = ' ';
+
+	LCD_ShowString(8, 192, 16, br, 0);
+}

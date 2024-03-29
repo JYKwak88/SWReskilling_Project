@@ -176,6 +176,7 @@ void LCD_direction(u8 direction);
 
 void Screen_Init(void);
 void LCD_LED_Toggle_Info(void);
+void Show_Brightness(void);
 
 // gui.c
 void GUI_DrawPoint(u16 x,u16 y,u16 color);

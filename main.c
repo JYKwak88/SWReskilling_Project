@@ -95,7 +95,7 @@ void Main(void)
 					Uart_Printf("EMERGENCY(%d)\n\r", EMERGENCY);
 					Uart_Printf("AUTO_LIGHT(%d)\n\r", AUTO_LIGHT);
 					Uart_Printf("LCD_AUTO_BRIGHTNESS(%d)\n\r", LCD_AUTO_BRIGHTNESS);
-					if (METER_Z == 1) LCD_LED_Toggle_Info();
+					LCD_LED_Toggle_Info();
 					break;
 
 				// LCD 밝기 수동 조절 입력
@@ -104,7 +104,7 @@ void Main(void)
 					if 		(input == '[' && LCD_BL_LEVEL > 0) 			 LCD_BL_LEVEL--;
 					else if (input == ']' && LCD_BL_LEVEL < LCD_BL_STEP) LCD_BL_LEVEL++;
 					Uart_Printf("LCD_AUTO_BRIGHTNESS DISABLE, LCD_BL_LEVEL = %d\n\r", LCD_BL_LEVEL * 100 / LCD_BL_STEP);
-					if (METER_Z == 1) LCD_LED_Toggle_Info();
+					LCD_LED_Toggle_Info();
 					break;
 
 				case 'h':
@@ -130,6 +130,7 @@ void Main(void)
 			LCD_BL_LEVEL = LCD_BL_STEP - (ILLUMINANCE * 100 / LCD_BL_STEP / 0xfff);
 		}
 		else TIM4->CCR1 = TIM4->ARR * LCD_BL_LEVEL / LCD_BL_STEP;
+		Show_Brightness();
 
 		Draw_Arrow();
 
