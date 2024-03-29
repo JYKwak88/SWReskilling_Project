@@ -269,10 +269,13 @@ void Draw_RightArrow(void)
 }
 
 
-void GUI_Arrow(void)
+void Draw_Arrow(void)
 {
-	// if (Macro_Clear_Bit(GPIOB->ODR, 8)) Draw_LeftArrow(void);
-	// else LCD_Fill()
+	if (L_LED_CHECK_ON) Draw_LeftArrow();
+	else LCD_Fill(LEFT_X, LEFT_Y, LEFT_X + ARROW_SIZE-1, LEFT_Y + ARROW_SIZE-1, METER_BACK_COLOR);
+	if (R_LED_CHECK_ON) Draw_RightArrow();
+	else LCD_Fill(RIGHT_X, RIGHT_Y, RIGHT_X + ARROW_SIZE-1, RIGHT_Y + ARROW_SIZE-1, METER_BACK_COLOR);
+
 }
 
 

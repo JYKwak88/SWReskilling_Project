@@ -98,8 +98,8 @@ void TailLED_Release(void);
 #define L_LED_INVERT		(Macro_Invert_Bit(BLINK_PORT->ODR, L_LED_PIN))
 #define R_LED_INVERT		(Macro_Invert_Bit(BLINK_PORT->ODR, R_LED_PIN))
 #define BOTH_LED_INVERT		(Macro_Invert_Area(BLINK_PORT->ODR, 0x3, L_LED_PIN))	// 안쓰는게 좋겠음
-#define L_LED_CHECK_ON		(Macro_Check_Bit_Clear(BLINK_PORT->ODR, 0x3, L_LED_PIN))
-#define R_LED_CHECK_ON		(Macro_Check_Bit_Clear(BLINK_PORT->ODR, 0x3, R_LED_PIN))
+#define L_LED_CHECK_ON		(Macro_Check_Bit_Clear(BLINK_PORT->ODR, L_LED_PIN))
+#define R_LED_CHECK_ON		(Macro_Check_Bit_Clear(BLINK_PORT->ODR, R_LED_PIN))
 
 
 void BlinkLED_Init(void);
@@ -174,7 +174,7 @@ void LCD_SetWindows(u16 xStar, u16 yStar,u16 xEnd,u16 yEnd);
 void LCD_SetCursor(u16 Xpos, u16 Ypos);
 void LCD_direction(u8 direction);
 
-void Help_Message_LCD(void);
+void Screen_Init(void);
 void LCD_LED_Toggle_Info(void);
 
 // gui.c
@@ -193,6 +193,7 @@ void LCD_ShowMonobmp(u16 x,u16 y,u16 fc, u16 bc, u8 x_size, u8 y_size, u8 mode);
 void GUI_DrawSpeedmeter(u16 x, u16 y, u16 fc, u16 bc);
 void Draw_LeftArrow(void);
 void Draw_RightArrow(void);
+void Draw_Arrow(void);
 void Draw_SpeedGage(void);
 
 extern const unsigned char Img_Speedmeter[1056];

@@ -310,8 +310,12 @@ void LCD_direction(u8 direction)
 	}
 }
 
-void Help_Message_LCD(void)
+void Screen_Init(void)
 {
+	LCD_Clear(METER_BACK_COLOR);
+
+	if (METER_Z == 1)
+	{
 	LCD_Fill(0,0,LCD_H/2,100,MOVE_HELP_BACK_COLOR);
 	POINT_COLOR = WHITE;
 	LCD_DrawLine(LCD_H/2+1,0,LCD_H/2+1,100);
@@ -357,6 +361,10 @@ void Help_Message_LCD(void)
 	Fill_Triangel(sw, sh, sw+3, sh+3, sw+3, sh-3);
 	sw = ew = x+105+48; sh = y*1+8; eh = y*4+8;
 	LCD_DrawLine(sw, sh, ew, eh);
+	}
+
+	GUI_DrawSpeedmeter(METER_CENTER_X-METER_W/2, METER_CENTER_Y-METER_H/2, METER_COLOR, METER_BACK_COLOR);
+
 }
 
 void LCD_LED_Toggle_Info(void)

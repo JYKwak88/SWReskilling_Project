@@ -43,14 +43,10 @@ void Main(void)
 
 #if (!DEV)
 	Wait_Bluetooth_Connect();
-	LCD_Clear(BLACK);
 #endif
 
 	Help_Message_Uart();
-	// Help_Message_LCD();
-	GUI_DrawSpeedmeter(METER_CENTER_X-METER_W/2, METER_CENTER_Y-METER_H/2, METER_COLOR, METER_BACK_COLOR);
-	Draw_LeftArrow();
-	Draw_RightArrow();
+	Screen_Init();
 
 	for(;;)
 	{
@@ -99,7 +95,7 @@ void Main(void)
 					Uart_Printf("EMERGENCY(%d)\n\r", EMERGENCY);
 					Uart_Printf("AUTO_LIGHT(%d)\n\r", AUTO_LIGHT);
 					Uart_Printf("LCD_AUTO_BRIGHTNESS(%d)\n\r", LCD_AUTO_BRIGHTNESS);
-					LCD_LED_Toggle_Info();
+					if (METER_Z == 1) LCD_LED_Toggle_Info();
 					break;
 
 				// LCD 밝기 수동 조절 입력
@@ -108,11 +104,12 @@ void Main(void)
 					if 		(input == '[' && LCD_BL_LEVEL > 0) 			 LCD_BL_LEVEL--;
 					else if (input == ']' && LCD_BL_LEVEL < LCD_BL_STEP) LCD_BL_LEVEL++;
 					Uart_Printf("LCD_AUTO_BRIGHTNESS DISABLE, LCD_BL_LEVEL = %d\n\r", LCD_BL_LEVEL * 100 / LCD_BL_STEP);
-					LCD_LED_Toggle_Info();
+					if (METER_Z == 1) LCD_LED_Toggle_Info();
 					break;
 
 				case 'h':
-					Help_Message_Uart();
+					METER_Z ^= 3;// 1 <-> 2
+					Screen_Init();
 					break;
 				default:
 					Uart_Printf("[%c] is Wrong Input\n\r", input);
@@ -134,6 +131,7 @@ void Main(void)
 		}
 		else TIM4->CCR1 = TIM4->ARR * LCD_BL_LEVEL / LCD_BL_STEP;
 
+		Draw_Arrow();
 
 	}
 
