@@ -17,9 +17,15 @@ void H_R_LED_Init(void)
 	Macro_Set_Area(GPIOA->ODR, 0x3, 4);     // 초기 high로 off
 
     // Left, Right : GPIO
-    Macro_Set_Bit(RCC->APB2ENR, 3);     // GPIOB Clock
-	Macro_Write_Block(GPIOB->CRH, 0xff, 0x66, 0);   // PB8,9
-	Macro_Set_Area(GPIOB->ODR, 0x3, 8);     // 초기 high로 off
+    // Macro_Set_Bit(RCC->APB2ENR, 3);     // GPIOB Clock
+	// Macro_Write_Block(GPIOB->CRH, 0xff, 0x66, 0);   // PB8,9
+	// Macro_Set_Area(GPIOB->ODR, 0x3, 8);     // 초기 high로 off
+
+    Macro_Write_Block(AFIO->MAPR, 0x7, 0x4, 24);    // JTAG,SWD Disable
+    Macro_Set_Bit(RCC->APB2ENR, 2);     // GPIOA Clock
+	Macro_Write_Block(GPIOA->CRH, 0xff, 0x22, 20);   // PA13,14
+
+    BOTH_LED_OFF;
 
     // Left, Right blinking interrupt 용 TIM3
     // Left, Right LED에 대해 인터럽트 설정, 인터럽트 핸들러에서 반전
@@ -98,20 +104,7 @@ void LED_Control(void)
 
 void BlinkLED_Control(void)
 {
-    // if (EMERGENCY)
-    // {
-    //     if (DIRECTION == -1)        Macro_Write_Block(GPIOB->ODR, 0x1, Macro_Check_Bit_Set(GPIOB->ODR, 8), 9);
-    //     else if (DIRECTION == 1)    Macro_Write_Block(GPIOB->ODR, 0x1, Macro_Check_Bit_Set(GPIOB->ODR, 9), 8);
-    //     else if (DIRECTION == 0)
-    //     {
-    //         Macro_Clear_Area(GPIOB->ODR, 0x3, 8);
-    //         BLINK_CNT = 0;
-    //     }
-    // }
-    // else
-    {
-        if (DIRECTION == -1)        Macro_Set_Bit(GPIOB->ODR, 9);
-        else if (DIRECTION == 1)    Macro_Set_Bit(GPIOB->ODR, 8);
-        else if (DIRECTION == 0)    Macro_Set_Area(GPIOB->ODR, 0x3, 8);
-    }
+    if (DIRECTION == -1)        R_LED_OFF;
+    else if (DIRECTION == 1)    L_LED_OFF;
+    else if (DIRECTION == 0)    BOTH_LED_OFF;
 }

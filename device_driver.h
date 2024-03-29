@@ -86,6 +86,22 @@ void TailLED_Init(void);
 void TailLED_On(void);
 void TailLED_Release(void);
 
+#define BLINK_PORT	GPIOA		// pin 바꿀 때 extled.c의 BlinkLED_Init 수정 필요!
+#define L_LED_PIN	(13)
+#define R_LED_PIN	(14)
+#define L_LED_ON
+#define R_LED_ON
+#define BOTH_LED_ON
+#define L_LED_OFF			(Macro_Set_Bit(BLINK_PORT->ODR, L_LED_PIN))
+#define R_LED_OFF			(Macro_Set_Bit(BLINK_PORT->ODR, R_LED_PIN))
+#define BOTH_LED_OFF		(Macro_Set_Area(BLINK_PORT->ODR, 0x3, L_LED_PIN))		// 안쓰는게 좋겠음
+#define L_LED_INVERT		(Macro_Invert_Bit(BLINK_PORT->ODR, L_LED_PIN))
+#define R_LED_INVERT		(Macro_Invert_Bit(BLINK_PORT->ODR, R_LED_PIN))
+#define BOTH_LED_INVERT		(Macro_Invert_Area(BLINK_PORT->ODR, 0x3, L_LED_PIN))	// 안쓰는게 좋겠음
+#define L_LED_CHECK_ON		(Macro_Check_Bit_Clear(BLINK_PORT->ODR, 0x3, L_LED_PIN))
+#define R_LED_CHECK_ON		(Macro_Check_Bit_Clear(BLINK_PORT->ODR, 0x3, R_LED_PIN))
+
+
 void BlinkLED_Init(void);
 void BlinkLED_Control(void);
 

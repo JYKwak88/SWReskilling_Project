@@ -595,15 +595,15 @@ void TIM4_IRQHandler(void)
   {
     if (EMERGENCY == 1)
     {
-      Macro_Invert_Area(GPIOB->ODR, 0x3, 8);
+      BOTH_LED_INVERT;
     }
     else if (DIRECTION == -1)
     {
-      Macro_Invert_Bit(GPIOB->ODR, 8);
+      L_LED_INVERT;
     }
     else if (DIRECTION == 1)
     {
-      Macro_Invert_Bit(GPIOB->ODR, 9);
+      R_LED_INVERT;
     }
     BLINK_CNT = 0;
   }
