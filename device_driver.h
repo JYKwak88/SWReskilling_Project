@@ -14,22 +14,22 @@ extern volatile u8 Uart1_Rx_Data;
 extern volatile u8 Uart3_Rx_In;
 extern volatile u8 Uart3_Rx_Data;
 // ADC1_2
-extern volatile u32 EXT_LIGHT_LEVEL;
-extern volatile u8 NIGHT;
+extern volatile u32 ILLUMINANCE;	//외부 조도
+extern volatile u8 NIGHT;			//1,야간; 0,주간
 // TIM4
-extern volatile u8 EMERGENCY;
-extern volatile u16 BLINK_CNT;
-extern volatile s16 NO_INPUT_CNT;
-extern volatile u8 CDS_WAIT_CNT;
+extern volatile u16 BLINK_CNT;		//깜빡이 toggle 시점 cnt
+extern volatile s16 NO_INPUT_CNT;	//UART 입력 없음 판단용 cnt
+extern volatile u8 CDS_WAIT_CNT;	//조도센서 측정 시점 cnt
 
 // main.c
 extern volatile enum _status DRIVE_STATUS;
 extern volatile enum _direction DIRECTION;
 extern volatile enum _speed SPEED;
-extern volatile u8 LIGHT_ON;
-extern volatile u8 AUTO_LIGHT;
-extern volatile u8 LCD_AUTO_BRIGHTNESS;
-extern volatile u32 LCD_BL_LEVEL;
+extern volatile u8 LIGHT_ON;			//사용자 LED on/off
+extern volatile u8 EMERGENCY;			//비상등
+extern volatile u8 AUTO_LIGHT;			//외부조도에 따른 자동 LED on/off
+extern volatile u8 LCD_AUTO_BRIGHTNESS;	//외부조도에 따른 자동 LCD 밝기 조절 on/off
+extern volatile u8 LCD_BL_LEVEL;		//LCD 밝기 단계 (max = LCD_BL_STEP, defined)
 
 // clock.c
 void Clock_Init(void);
@@ -68,8 +68,6 @@ char Uart3_Get_Pressed(void);
 // SysTick.c
 void SysTick_Delay_ms(u32 msec);
 
-// Timer.c
-
 // SysTick.c
 void SysTick_Delay_ms(u32 msec);
 
@@ -92,7 +90,6 @@ void BlinkLED_Init(void);
 void BlinkLED_Control(void);
 
 void LED_Control(void);
-
 
 // drivecar.c
 void Wait_Bluetooth_Connect(void);

@@ -3,7 +3,6 @@
 static void Sys_Init(void)
 {
 	Clock_Init();
-
 	Uart1_Init(115200);
 
 	SCB->VTOR = 0x08003000;
@@ -14,9 +13,10 @@ volatile enum _status DRIVE_STATUS = idle;
 volatile enum _direction DIRECTION = center;
 volatile enum _speed SPEED = stop;
 volatile u8 LIGHT_ON = 0;
+volatile u8 EMERGENCY = 0;
 volatile u8 AUTO_LIGHT = 1;
 volatile u8 LCD_AUTO_BRIGHTNESS = 1;
-volatile u32 LCD_BL_LEVEL = 0;
+volatile u8 LCD_BL_LEVEL = 0;
 
 void Main(void)
 {
@@ -76,6 +76,7 @@ void Main(void)
 			{
 				switch (input)
 				{
+				// 모터 구동에 관한 입력
 				case 0:
 					NO_INPUT_CNT = -1;
 					DIRECTION = center;
@@ -87,36 +88,24 @@ void Main(void)
 					Drive_Car(input);
 					break;
 
-				case 'l':
-					LIGHT_ON ^= 1;
-					Uart_Printf("LIGHT_ON = %d\n\r", LIGHT_ON);
-					LCD_LED_Toggle_Info();
-					break;
-				case 'y':
-					EMERGENCY ^= 1;
-					Uart_Printf("EMERGENCY = %d\n\r", EMERGENCY);
-					LCD_LED_Toggle_Info();
-					break;
-				case 'o':
-					AUTO_LIGHT ^= 1;
-					Uart_Printf("AUTO_LIGHT = %d\n\r", AUTO_LIGHT);
+				// LED, LCD 상태 변경 입력
+				case 'l': case 'y': case 'o': case 'p':
+					if (input == 'l') LIGHT_ON ^= 1;
+					if (input == 'y') EMERGENCY ^= 1;
+					if (input == 'o') AUTO_LIGHT ^= 1;
+					if (input == 'p') LCD_AUTO_BRIGHTNESS ^= 1;
+					Uart_Printf("LIGHT_ON(%d)\n\r", LIGHT_ON);
+					Uart_Printf("EMERGENCY(%d)\n\r", EMERGENCY);
+					Uart_Printf("AUTO_LIGHT(%d)\n\r", AUTO_LIGHT);
+					Uart_Printf("LCD_AUTO_BRIGHTNESS(%d)\n\r", LCD_AUTO_BRIGHTNESS);
 					LCD_LED_Toggle_Info();
 					break;
 
-				case 'p':
-					LCD_AUTO_BRIGHTNESS ^= 1;
-					Uart_Printf("LCD_AUTO_BRIGHTNESS = %d\n\r", LCD_AUTO_BRIGHTNESS);
-					LCD_LED_Toggle_Info();
-					break;
-				case '[':
+				// LCD 밝기 수동 조절 입력
+				case '[': case ']':		// ascii 133, 135
 					LCD_AUTO_BRIGHTNESS = 0;
-					if (LCD_BL_LEVEL > 0) LCD_BL_LEVEL--;
-					Uart_Printf("LCD_AUTO_BRIGHTNESS DISABLE, LCD_BL_LEVEL = %d\n\r", LCD_BL_LEVEL * 100 / LCD_BL_STEP);
-					LCD_LED_Toggle_Info();
-					break;
-				case ']':
-					LCD_AUTO_BRIGHTNESS = 0;
-					if (LCD_BL_LEVEL < LCD_BL_STEP) LCD_BL_LEVEL++;
+					if 		(input == '[' && LCD_BL_LEVEL > 0) 			 LCD_BL_LEVEL--;
+					else if (input == ']' && LCD_BL_LEVEL < LCD_BL_STEP) LCD_BL_LEVEL++;
 					Uart_Printf("LCD_AUTO_BRIGHTNESS DISABLE, LCD_BL_LEVEL = %d\n\r", LCD_BL_LEVEL * 100 / LCD_BL_STEP);
 					LCD_LED_Toggle_Info();
 					break;
@@ -139,8 +128,8 @@ void Main(void)
 
 		if (LCD_AUTO_BRIGHTNESS)
 		{
-			TIM4->CCR1 = TIM4->ARR * EXT_LIGHT_LEVEL / 0xfff;
-			LCD_BL_LEVEL = LCD_BL_STEP - (EXT_LIGHT_LEVEL * 100 / LCD_BL_STEP / 0xfff);
+			TIM4->CCR1 = TIM4->ARR * ILLUMINANCE / 0xfff;	// ADC resolution = 0xfff
+			LCD_BL_LEVEL = LCD_BL_STEP - (ILLUMINANCE * 100 / LCD_BL_STEP / 0xfff);
 		}
 		else TIM4->CCR1 = TIM4->ARR * LCD_BL_LEVEL / LCD_BL_STEP;
 

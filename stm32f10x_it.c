@@ -412,18 +412,18 @@ void DMA1_Channel7_IRQHandler(void)
  * Output         : None
  * Return         : None
  *******************************************************************************/
-volatile u32 EXT_LIGHT_LEVEL = 0;
+volatile u32 ILLUMINANCE = 0;
 volatile u8 NIGHT = 0;
 void ADC1_2_IRQHandler(void)
 {
-  EXT_LIGHT_LEVEL = ADC1->DR;
-  // Uart_Printf("LIGHT LEVEL = 0x%x\n\r", EXT_LIGHT_LEVEL);
-  if (NIGHT == 1 && EXT_LIGHT_LEVEL > 0xb00)
+  ILLUMINANCE = ADC1->DR;
+  // Uart_Printf("LIGHT LEVEL = 0x%x\n\r", ILLUMINANCE);
+  if (NIGHT == 1 && ILLUMINANCE > 0xb00)
   {
     NIGHT = 0;
     LED_Control();
   }
-  else if (NIGHT == 0 && EXT_LIGHT_LEVEL < 0x900)
+  else if (NIGHT == 0 && ILLUMINANCE < 0x900)
   {
     NIGHT = 1;
     LED_Control();
@@ -584,7 +584,6 @@ void TIM3_IRQHandler(void)
  * Output         : None
  * Return         : None
  *******************************************************************************/
-volatile u8 EMERGENCY = 0;
 volatile u16 BLINK_CNT = 0;
 volatile s16 NO_INPUT_CNT = 0;
 volatile u8 CDS_WAIT_CNT = 0;
