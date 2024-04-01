@@ -95,6 +95,11 @@ void Turn_Car(u8 input)
         SEE_RIGHT;
     }
 
+    if (SPEED == 0)
+    {
+        Motor_Drive(DIRECTION, -2);
+        SysTick_Delay_ms(50);
+    }
     Motor_Drive(DIRECTION, SPEED);
 }
 
@@ -130,8 +135,8 @@ void Drive_Car(u8 input)
         break;
     }
 
-    if (DRIVE_STATUS == 1) Forward_Car();
+    if (DRIVE_STATUS == 1 && FRONT_DISTANCE > 2000) Forward_Car();
     else if (DRIVE_STATUS == -1) Backward_Car();
-    else if (DRIVE_STATUS == 0) Stop_Car();
+    else Stop_Car();
     Draw_SpeedGage();
 }

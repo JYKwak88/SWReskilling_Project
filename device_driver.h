@@ -16,6 +16,14 @@ extern volatile u8 Uart3_Rx_Data;
 // ADC1_2
 extern volatile u32 ILLUMINANCE;	//외부 조도
 extern u8 NIGHT;			//1,야간; 0,주간
+// TIM3
+extern volatile u16 FRONT_START_CCR;
+extern volatile u16 FRONT_END_CCR;
+extern volatile u8 FRONT_CAPTURED;
+extern volatile u16 REAR_START_CCR;
+extern volatile u16 REAR_END_CCR;
+extern volatile u8 REAR_CAPTURED;
+
 // TIM4
 extern u16 BLINK_CNT;		//깜빡이 toggle 시점 cnt
 extern s16 NO_INPUT_CNT;	//UART 입력 없음 판단용 cnt
@@ -30,6 +38,8 @@ extern u8 EMERGENCY;			//비상등
 extern u8 AUTO_LIGHT;			//외부조도에 따른 자동 LED on/off
 extern u8 LCD_AUTO_BRIGHTNESS;	//외부조도에 따른 자동 LCD 밝기 조절 on/off
 extern u8 LCD_BL_LEVEL;		//LCD 밝기 단계 (max = LCD_BL_STEP, defined)
+extern u32 FRONT_DISTANCE;
+extern u32 REAR_DISTANCE;
 
 // clock.c
 void Clock_Init(void);
@@ -150,12 +160,10 @@ void BLU_PWM_Init(void);
 
 #define LCD_RST_SET     GPIOA->BSRR=(1<<11)
 #define LCD_RST_CLR     GPIOA->BRR=(1<<11)
-// #define LCD_RST_SET     GPIOA->BSRR=(1<<6)
-// #define LCD_RST_CLR     GPIOA->BRR=(1<<6)
 #define LCD_CS_SET      GPIOB->BSRR=(1<<12)
 #define LCD_CS_CLR      GPIOB->BRR=(1<<12)
-#define LCD_RS_SET      GPIOA->BSRR=(1<<7)
-#define LCD_RS_CLR      GPIOA->BRR=(1<<7)
+#define LCD_RS_SET      GPIOA->BSRR=(1<<15)
+#define LCD_RS_CLR      GPIOA->BRR=(1<<15)
 
 void SPI2_Init(void);
 void LCD_GPIO_Init(void);
@@ -205,3 +213,5 @@ extern const unsigned char Img_Speedmeter[1056];
 #define SEE_CENTER	(TIM4->CCR3 = TIM4->ARR * 6.7 / 100)
 #define SEE_RIGHT	(TIM4->CCR3 = TIM4->ARR * 4 / 100)
 void Servo_Init(void);
+void USONIC_TRIG_Init(void);
+void USONIC_ECHO_Init(void);

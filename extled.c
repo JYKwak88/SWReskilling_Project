@@ -4,8 +4,8 @@
 // Head : PA4
 // Rear : PA5 (후진)
 // Tail : TIM4_CH2(PB7)
-// Left : TIM4_CH3(PB8)
-// Right : TIM4_CH4(PB9)
+// Left : PA13
+// Right : PA14
 */
 #include "device_driver.h"
 
@@ -67,7 +67,7 @@ void TailLED_Init(void)
 	Macro_Set_Bit(TIM4->EGR,0);
 
     // TIM4->SR Timer Interrupt Pending Clear
-    Macro_Set_Bit(TIM4->SR, 0);
+    Macro_Clear_Bit(TIM4->SR, 0);
     // NVIC Interrupt Pending Clear => NVIC용 Macro 사용
     NVIC_ClearPendingIRQ(TIM4_IRQn);
     // TIM4->DIER TIM4 Interrupt Enable

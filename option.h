@@ -32,3 +32,10 @@ enum _speed{back2=-2, back=-1, stop=0, one, two, three, four, five};
 #define TIM4_PLS_OF_10ms  	(10000/TIM4_TICK)
 #define TIM4_UE_PERIOD      (20000)              // usec : PWM주기
 #define TIM4_MAX	  		(0xffffu)
+
+// ultrasonic.c
+#define TIM3_TICK         	(10) 			// usec
+#define TIM3_FREQ 	  		(1000000/TIM3_TICK)	// Hz
+#define TIM3_PLS_OF_10ms  	(10000/TIM3_TICK)
+#define TIM3_UE_PERIOD      (100000)              // usec
+#define TIM3_MAX	  		(18000/TIM3_TICK)

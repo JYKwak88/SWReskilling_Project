@@ -571,10 +571,32 @@ void TIM2_IRQHandler(void)
  * Output         : None
  * Return         : None
  *******************************************************************************/
+volatile u16 FRONT_START_CCR = 0;
+volatile u16 FRONT_END_CCR = 0;
+volatile u8 FRONT_CAPTURED = 0;
+volatile u16 REAR_START_CCR = 0;
+volatile u16 REAR_END_CCR = 0;
+volatile u8 REAR_CAPTURED = 0;
 void TIM3_IRQHandler(void)
 {
-	Macro_Clear_Bit(TIM3->SR, 0);
-	NVIC_ClearPendingIRQ(TIM3_IRQn);
+  if (Macro_Check_Bit_Set(TIM3->SR, 1))   // TIM3_CH1 Interrupt
+  {
+    if (Macro_Check_Bit_Clear(TIM3->CCER, 1))   // rising edge capture 상태였으면
+    {
+      FRONT_START_CCR = TIM3->CCR1;   // 거리측정 시작의 CNT
+      Macro_Set_Bit(TIM3->CCER, 1);   // falling edge capture 로 변경
+    }
+    else    // falling edge capture 상태였으면
+    {
+      FRONT_END_CCR = TIM3->CCR1;   // 거리측정 끝의 CNT
+      FRONT_CAPTURED = 1;   // 측정완료를 알림
+      Macro_Clear_Bit(TIM3->CCER, 1);   // rising edge capture 로 변경
+    }
+	  Macro_Clear_Bit(TIM3->SR, 1);   // TIM3_CH1 Interrupt 클리어
+  }
+
+
+  NVIC_ClearPendingIRQ(TIM3_IRQn);
 }
 
 /*******************************************************************************
@@ -587,6 +609,7 @@ void TIM3_IRQHandler(void)
 u16 BLINK_CNT = 0;
 s16 NO_INPUT_CNT = 0;
 u8 CDS_WAIT_CNT = 0;
+u8 USONIC_TRIG_CNT = 0;
 void TIM4_IRQHandler(void)
 {
   BLINK_CNT++;
@@ -615,14 +638,25 @@ void TIM4_IRQHandler(void)
   }
   else if (NO_INPUT_CNT > 0) NO_INPUT_CNT++;
 
-	Macro_Clear_Bit(TIM4->SR, 0);
-	NVIC_ClearPendingIRQ(TIM4_IRQn);
-
   if (CDS_WAIT_CNT > 20000/TIM4_UE_PERIOD)  // ADC 트리거를 자주 할 수록, BLU 변화가 부드러워짐
   {
     Macro_Set_Bit(ADC1->CR2, 22); 					// CDS Start (SW Trigger, EXTTRIG==1 일때만 됨)
     CDS_WAIT_CNT = 0;
   }
+
+  if (USONIC_TRIG_CNT >= 100000/TIM4_UE_PERIOD)
+  {
+    USONIC_TRIG_CNT = 1;
+    TIM4->CCR4 = TIM4->ARR - 1;
+  }
+  else
+  {
+    TIM4->CCR4 = TIM4->ARR;
+    USONIC_TRIG_CNT++;
+  }
+
+	Macro_Clear_Bit(TIM4->SR, 0);
+	NVIC_ClearPendingIRQ(TIM4_IRQn);
 }
 
 /*******************************************************************************

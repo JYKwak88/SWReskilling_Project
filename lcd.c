@@ -5,8 +5,8 @@
 // SDO(MISO)    SPI2_MISO(PB14)
 // CS           SPI2_NSS(PB12)
 // Back Light   TIM3_CH1(PB6)
-// DC/RS        PA7
-// RST          PA6
+// DC/RS        PA15
+// RST          PA11
 **************************************************************************************************/
 #define SPI2_BR_OP (0)
 // SPI2_BR_OP   PCLK Dividing   Baud Rate(MHz)   (SPI2:APB1 => PCLK1 = 36MHz)
@@ -53,18 +53,16 @@ void SPI2_Init(void)
 
 void LCD_GPIO_Init(void)
 {
-// DC/RS        PA7
-// RST          PA6
+// DC/RS        PA15
+// RST          PA11
 	Macro_Set_Area(RCC->APB2ENR, 0x3, 2);       // PA PB Enable
-    // Macro_Write_Block(GPIOA->CRL, 0xf, 0x3, 24);            // PA6 GPO P-P 50MHz
     Macro_Write_Block(GPIOA->CRH, 0xf, 0x3, 12);            // PA11 GPO P-P 50MHz
-    Macro_Write_Block(GPIOA->CRL, 0xf, 0x3, 28);            // PA7 GPO P-P 50MHz
-    // Macro_Write_Block(GPIOB->CRL, 0xf, 0x3, 20);            // PB5 GPO P-P 50MHz
+    Macro_Write_Block(GPIOA->CRH, 0xf, 0x3, 28);            // PA15 GPO P-P 50MHz
 }
 
 void BLU_PWM_Init(void)
 {
-    //extled.c 의 TailLED_Init()에서 TIM3 init
+    //extled.c 의 TailLED_Init()에서 TIM4 init
     Macro_Write_Block(GPIOB->CRL, 0xf, 0xa, 24);
     // 초기 출력(high)은 duty 100%
     TIM4->CCR1 = TIM4->ARR;
@@ -441,6 +439,7 @@ void LCD_LED_Toggle_Info(void)
 
 void Show_Brightness(void)
 {
+	if (METER_Z == 1) return;
 	POINT_COLOR = HELP_FONT_COLOR;
 	BACK_COLOR = LED_HELP_BACK_COLOR;
 	u8 br[4] = "000";

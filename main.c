@@ -18,6 +18,8 @@ u8 AUTO_LIGHT = 1;
 u8 LCD_AUTO_BRIGHTNESS = 1;
 u8 LCD_BL_LEVEL = 0;
 u8 METER_Z = 2;
+u32 FRONT_DISTANCE = 0;  // unit : mm
+u32 REAR_DISTANCE = 0;  // unit : mm
 
 void Main(void)
 {
@@ -38,6 +40,8 @@ void Main(void)
 	Uart3_Init(9600);
 
 	Servo_Init();
+	USONIC_TRIG_Init();
+	USONIC_ECHO_Init();
 
 	LCD_Init();
 
@@ -138,6 +142,25 @@ void Main(void)
 		else TIM4->CCR1 = TIM4->ARR * (LCD_BL_LEVEL + 1) / (LCD_BL_STEP + 1);
 
 		Draw_Arrow();
+
+		if (FRONT_CAPTURED)
+		{
+			FRONT_CAPTURED = 0;
+		    FRONT_DISTANCE = (FRONT_START_CCR - FRONT_END_CCR) * 17;  // 거리 계산
+			if (FRONT_DISTANCE < 2000)
+			{
+				Uart_Printf("FRONT_DIST = %d mm\n\r", FRONT_DISTANCE);
+				if (DRIVE_STATUS == 1)
+				{
+					EMERGENCY = 1;
+					Draw_Emergency(EMERGENCY);
+					Drive_Car('0');
+					Print_State_Uart();
+					LED_Control();
+				}
+			}
+		}
+
 	}
 
 }
