@@ -32,6 +32,3 @@ enum _speed{back2=-2, back=-1, stop=0, one, two, three, four, five};
 #define TIM4_PLS_OF_10ms  	(10000/TIM4_TICK)
 #define TIM4_UE_PERIOD      (20000)              // usec : PWM주기
 #define TIM4_MAX	  		(0xffffu)
-
-// others
-#define LCD_BL_STEP     (20)    // 100을 n(최대100)단계로 나누어 표현 = LCD_BL_LEVEL의 최대값

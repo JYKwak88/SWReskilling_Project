@@ -366,28 +366,35 @@ void Screen_Init(void)
 	{
 		LCD_Fill(0,0,48-1,79,MOVE_HELP_BACK_COLOR);
 		POINT_COLOR = WHITE;
-		LCD_Fill(0,80,48-1,208-1,LED_HELP_BACK_COLOR);
+		LCD_Fill(271,0,271+48-1,128-1,LED_HELP_BACK_COLOR);
 
 		POINT_COLOR = HELP_FONT_COLOR;
 		BACK_COLOR = MOVE_HELP_BACK_COLOR;
 		u16 x = 0, y = 16;
-		LCD_ShowString(x+8,   y*0,y,(u8*)("MOVE"),1);
+		LCD_ShowString(x+8,  y*0,y,(u8*)("MOVE"),1);
 		LCD_ShowString(x+12, y*1,y,(u8*)("0-5"), 1);
-		LCD_ShowString(x+20,y*2,y,(u8*)("W"), 1);
-		LCD_ShowString(x+4, y*3,y,(u8*)("A S D"), 1);
-		LCD_ShowString(x+20,y*4,y,(u8*)("X"), 1);
+		LCD_ShowString(x+20, y*2,y,(u8*)("W"), 1);
+		LCD_ShowString(x+4,  y*3,y,(u8*)("A S D"), 1);
+		LCD_ShowString(x+20, y*4,y,(u8*)("X"), 1);
+
+		LCD_ShowString(x,    y*5,y,(u8*)"H:HELP", 1);
 
 		BACK_COLOR = LED_HELP_BACK_COLOR;
-		LCD_ShowString(x+4, y*5,y,(u8*)("=LED="),1);
+		x = 271;
+		LCD_ShowString(x+4, y*0,y,(u8*)("=LED="),1);
 
-		LCD_ShowString(x+4, y*9, y,(u8*)("=LCD="),1);
-		LCD_ShowString(x,   y*11,y,(u8*)("[]:-/+"),1);
-		LCD_ShowString(x+36,y*12,y,(u8*)("%"),1);
+		LCD_ShowString(x+4, y*4, y,(u8*)("=LCD="),1);
+		LCD_ShowString(x,   y*6,y,(u8*)("[]:-/+"),1);
+		LCD_ShowString(x+36,y*7,y,(u8*)("%"),1);
+
+		POINT_COLOR = GRAY;
 
 		LCD_LED_Toggle_Info();
+		Show_Brightness();
 	}
 
 	GUI_DrawSpeedmeter(METER_CENTER_X-METER_W/2, METER_CENTER_Y-METER_H/2, METER_COLOR, METER_BACK_COLOR);
+	Draw_Emergency(EMERGENCY);
 
 }
 
@@ -411,24 +418,24 @@ void LCD_LED_Toggle_Info(void)
 	}
 	else if (METER_Z == 2)
 	{
-		x = 0;
+		x = 271;
 
 		if (LIGHT_ON == 1)
 		{
 			POINT_COLOR = RED;
-			LCD_ShowString(x,y*6,y,(u8*)("L:OFF"),0);
+			LCD_ShowString(x,y*1,y,(u8*)("L:OFF"),0);
 		}
 		else if (LIGHT_ON == 0)
 		{
 			POINT_COLOR = WHITE;
-			LCD_ShowString(x,y*6,y,(u8*)("L:ON "),0);
+			LCD_ShowString(x,y*1,y,(u8*)("L:ON "),0);
 		}
 		POINT_COLOR = (EMERGENCY)?RED:WHITE;
-		LCD_ShowString(x,y*7,y,(u8*)("Y:EMER"),1);
+		LCD_ShowString(x,y*2,y,(u8*)("Y:EMER"),1);
 		POINT_COLOR = (AUTO_LIGHT)?RED:WHITE;
-		LCD_ShowString(x,y*8,y,(u8*)("O:AUTO"),1);
+		LCD_ShowString(x,y*3,y,(u8*)("O:AUTO"),1);
 		POINT_COLOR = (LCD_AUTO_BRIGHTNESS)?RED:WHITE;
-		LCD_ShowString(x,y*10,y,(u8*)("P:AUTO"),1);
+		LCD_ShowString(x,y*5,y,(u8*)("P:AUTO"),1);
 	}
 }
 
@@ -444,5 +451,5 @@ void Show_Brightness(void)
 	if (br100 == 100) br[0] = '1';
 	else br[0] = ' ';
 
-	LCD_ShowString(8, 192, 16, br, 0);
+	LCD_ShowString(279, 16*7, 16, br, 0);
 }

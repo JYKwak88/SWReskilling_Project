@@ -88,7 +88,11 @@ void Main(void)
 				// LED, LCD 상태 변경 입력
 				case 'l': case 'y': case 'o': case 'p':
 					if (input == 'l') LIGHT_ON ^= 1;
-					if (input == 'y') EMERGENCY ^= 1;
+					if (input == 'y')
+					{
+						EMERGENCY ^= 1;
+						Draw_Emergency(EMERGENCY);
+					}
 					if (input == 'o') AUTO_LIGHT ^= 1;
 					if (input == 'p') LCD_AUTO_BRIGHTNESS ^= 1;
 					Uart_Printf("LIGHT_ON(%d)\n\r", LIGHT_ON);
@@ -104,6 +108,7 @@ void Main(void)
 					if 		(input == '[' && LCD_BL_LEVEL > 0) 			 LCD_BL_LEVEL--;
 					else if (input == ']' && LCD_BL_LEVEL < LCD_BL_STEP) LCD_BL_LEVEL++;
 					Uart_Printf("LCD_AUTO_BRIGHTNESS DISABLE, LCD_BL_LEVEL = %d\n\r", LCD_BL_LEVEL * 100 / LCD_BL_STEP);
+					Show_Brightness();
 					LCD_LED_Toggle_Info();
 					break;
 
@@ -127,13 +132,12 @@ void Main(void)
 		if (LCD_AUTO_BRIGHTNESS)
 		{
 			TIM4->CCR1 = TIM4->ARR * ILLUMINANCE / 0xfff;	// ADC resolution = 0xfff
-			LCD_BL_LEVEL = LCD_BL_STEP - (ILLUMINANCE * 100 / LCD_BL_STEP / 0xfff);
+			LCD_BL_LEVEL = ILLUMINANCE * LCD_BL_STEP / 0xfff;
+			Show_Brightness();
 		}
-		else TIM4->CCR1 = TIM4->ARR * LCD_BL_LEVEL / LCD_BL_STEP;
-		Show_Brightness();
+		else TIM4->CCR1 = TIM4->ARR * (LCD_BL_LEVEL + 1) / (LCD_BL_STEP + 1);
 
 		Draw_Arrow();
-
 	}
 
 }

@@ -30,10 +30,12 @@ extern u8 METER_Z;
 #define FIVE_X  (METER_CENTER_X + METER_PIN_LEN * 0.71)
 #define FIVE_Y  (METER_CENTER_Y + METER_PIN_LEN * 0.71)
 #define LEFT_X (METER_CENTER_X - ARROW_SIZE*2)
-#define LEFT_Y (METER_CENTER_Y - METER_H / 2 - ARROW_SIZE - (5 * METER_Z))
-#define RIGHT_X (METER_CENTER_X + ARROW_SIZE)
-#define RIGHT_Y (METER_CENTER_Y - METER_H / 2 - ARROW_SIZE - (5 * METER_Z))
-#define ARROW_SIZE (12 * METER_Z)
+#define LEFT_Y (METER_CENTER_Y - METER_H / 2 - ARROW_SIZE - (8 * METER_Z))
+#define RIGHT_X (METER_CENTER_X + ARROW_SIZE + METER_Z)
+#define RIGHT_Y (METER_CENTER_Y - METER_H / 2 - ARROW_SIZE - (8 * METER_Z))
+#define ARROW_SIZE (14 * METER_Z)
+#define EMER_X (METER_CENTER_X - ARROW_SIZE / 2)
+#define EMER_Y (METER_CENTER_Y - METER_H / 2 - ARROW_SIZE - (8 * METER_Z))
 
 #define WHITE       0xFFFF
 #define BLACK      	0x0000
@@ -55,3 +57,5 @@ extern u8 METER_Z;
 #define LGRAY 		0xC618 //밝은회색(PANNEL),형태배경색
 #define LGRAYBLUE   0xA651 //(중간레이어컬러)
 #define LBBLUE      0x2B12 //연한갈색파란색(항목의반대색상, 선택)
+
+#define LCD_BL_STEP     (20)    // 100을 n(최대100)단계로 나누어 표현 = LCD_BL_LEVEL의 최대값

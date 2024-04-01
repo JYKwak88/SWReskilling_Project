@@ -195,6 +195,7 @@ void GUI_DrawSpeedmeter(u16 x, u16 y, u16 fc, u16 bc);
 void Draw_LeftArrow(void);
 void Draw_RightArrow(void);
 void Draw_Arrow(void);
+void Draw_Emergency(u8 emer);
 void Draw_SpeedGage(void);
 
 extern const unsigned char Img_Speedmeter[1056];
