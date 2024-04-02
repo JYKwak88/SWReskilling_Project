@@ -34,6 +34,7 @@ void Main(void)
 	DIRECTION = center;
 	SPEED = stop;
 
+	// Init 순서 유지할 것
 	Motor_Init();
 	H_R_LED_Init();
 	TailLED_Init();
@@ -110,10 +111,14 @@ void Main(void)
 
 				// LCD 밝기 수동 조절 입력
 				case '[': case ']':		// ascii 133, 135
-					LCD_AUTO_BRIGHTNESS = 0;
+					if (LCD_AUTO_BRIGHTNESS)
+					{
+						LCD_AUTO_BRIGHTNESS = 0;
+						Uart_Printf("LCD_AUTO_BRIGHTNESS DISABLE\n\r");
+					}
 					if 		(input == '[' && LCD_BL_LEVEL > 0) 			 LCD_BL_LEVEL--;
 					else if (input == ']' && LCD_BL_LEVEL < LCD_BL_STEP) LCD_BL_LEVEL++;
-					Uart_Printf("LCD_AUTO_BRIGHTNESS DISABLE, LCD_BL_LEVEL = %d\n\r", LCD_BL_LEVEL * 100 / LCD_BL_STEP);
+					Uart_Printf("LCD_BL_LEVEL = %d\n\r", LCD_BL_LEVEL * 100 / LCD_BL_STEP);
 					Show_Brightness();
 					LCD_LED_Toggle_Info();
 					break;
@@ -165,7 +170,7 @@ void Main(void)
 			if (FRONT_STATE == 0 && FRONT_DISTANCE < FRONT_LIMIT)
 			{
 				FRONT_STATE = 1;
-				Uart_Printf("FRONT_DIST = %d mm\n\r", FRONT_DISTANCE);
+				Uart_Printf("You Cannot Go Forward, FRONT_DIST = %d mm\n\r", FRONT_DISTANCE);
 				Draw_Frontsensor();
 				if (DRIVE_STATUS == 1)
 				{
@@ -179,7 +184,7 @@ void Main(void)
 			else if (FRONT_STATE == 1 && FRONT_DISTANCE > FRONT_LIMIT)
 			{
 				FRONT_STATE = 0;
-				Uart_Printf("FRONT_DIST = %d mm\n\r", FRONT_DISTANCE);
+				Uart_Printf("You Can Go Forward, FRONT_DIST = %d mm\n\r", FRONT_DISTANCE);
 				Draw_Frontsensor();
 			}
 		}
@@ -190,7 +195,7 @@ void Main(void)
 			if (REAR_STATE == 0 && REAR_DISTANCE < REAR_LIMIT)
 			{
 				REAR_STATE = 1;
-				Uart_Printf("REAR_DIST = %d mm\n\r", REAR_DISTANCE);
+				Uart_Printf("You Cannot Go Backward, REAR_DIST = %d mm\n\r", REAR_DISTANCE);
 				Draw_Rearsensor();
 				if (DRIVE_STATUS == -1)
 				{
@@ -204,7 +209,7 @@ void Main(void)
 			else if (REAR_STATE == 1 && REAR_DISTANCE > REAR_LIMIT)
 			{
 				REAR_STATE = 0;
-				Uart_Printf("REAR_DIST = %d mm\n\r", REAR_DISTANCE);
+				Uart_Printf("You Can Go Backward, REAR_DIST = %d mm\n\r", REAR_DISTANCE);
 				Draw_Rearsensor();
 			}
 		}

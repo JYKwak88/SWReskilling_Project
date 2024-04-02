@@ -35,20 +35,20 @@ void Wait_Bluetooth_Connect(void)
 void Help_Message_Uart(void)
 {
     Uart_Printf("= Move Control =\n\r");
-    Uart_Printf("0:stop          |  1~5:select fwd speed   |\n\r");
-    Uart_Printf("                |  w:go forward, speed++  |\n\r");
-    Uart_Printf("a:turn left     |  s:stop                 |  d:turn right\n\r");
-    Uart_Printf("                |  x:go back, speed--     |\n\r");
+    Uart_Printf("0:stop      | 1~5:select fwd speed   |\n\r");
+    Uart_Printf("            | w:go forward, speed++  |\n\r");
+    Uart_Printf("a:turn left | s:stop                 | d:turn right\n\r");
+    Uart_Printf("            | x:go backward, speed-- |\n\r");
     Uart_Printf("= Light Control =\n\r");
-    Uart_Printf("l:toggle light    |  o:toggle auto light  |  y:emergency light\n\r");
-    Uart_Printf("p:auto brightness |  [,]:brightness -/+\n\r");
+    Uart_Printf("l:toggle light    | o:toggle auto light | y:emergency light\n\r");
+    Uart_Printf("p:auto brightness | [,]:brightness -/+\n\r");
     Uart_Printf("\n\r");
     Print_State_Uart();
 }
 
 void Print_State_Uart(void)
 {
-    Uart_Printf("DRIVE_STATUS = %2d, DIRECTION = %2d, SPEED = %2d\n\r", DRIVE_STATUS, DIRECTION, SPEED);
+    Uart_Printf("DRIVE_STATUS(%2d)\n\rDIRECTION(%2d)\n\rSPEED(%2d)\n\r", DRIVE_STATUS, DIRECTION, SPEED);
 }
 
 void Forward_Car(void)

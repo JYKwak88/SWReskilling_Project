@@ -55,7 +55,7 @@ void LCD_GPIO_Init(void)
 {
 // DC/RS        PA15
 // RST          PA11
-	Macro_Set_Area(RCC->APB2ENR, 0x3, 2);       // PA PB Enable
+	Macro_Set_Bit(RCC->APB2ENR, 2);       // PA Enable
     Macro_Write_Block(GPIOA->CRH, 0xf, 0x3, 12);            // PA11 GPO P-P 50MHz
     Macro_Write_Block(GPIOA->CRH, 0xf, 0x3, 28);            // PA15 GPO P-P 50MHz
 }
@@ -105,10 +105,8 @@ void LCD_WR_DATA(u8 data)
 
 u8 SPI_WriteByte(u8 Byte)
 {
-    // Uart_Printf("Wait TX buffer empty\n\r");
 	while(Macro_Check_Bit_Clear(SPI2->SR, 1));    // Wait until Tx buffer empty
 	SPI2->DR = Byte;        // Byte 전송
-    // Uart_Printf("Wait RX buffer not empty\n\r");
 	while(Macro_Check_Bit_Clear(SPI2->SR, 0));      // Wait untill Rx buffer not empty
 	return SPI2->DR;        // 받은 data는 리턴
 }
@@ -250,7 +248,6 @@ void LCD_Init(void)
 	SysTick_Delay_ms(120);
 	LCD_WR_REG(0x29); //Display on (no param)
 
-	// Uart_Printf("LCD_direction() start\n\r");
     LCD_direction(USE_HORIZONTAL); //LCD 표시 방향 설정
 
 	LCD_Clear(BLACK);   // 전체화면

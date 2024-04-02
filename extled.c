@@ -17,18 +17,13 @@ void H_R_LED_Init(void)
 	Macro_Set_Area(GPIOA->ODR, 0x3, 4);     // 초기 high로 off
 
     // Left, Right : GPIO
-    // Macro_Set_Bit(RCC->APB2ENR, 3);     // GPIOB Clock
-	// Macro_Write_Block(GPIOB->CRH, 0xff, 0x66, 0);   // PB8,9
-	// Macro_Set_Area(GPIOB->ODR, 0x3, 8);     // 초기 high로 off
-
     Macro_Write_Block(AFIO->MAPR, 0x7, 0x4, 24);    // JTAG,SWD Disable
     Macro_Set_Bit(RCC->APB2ENR, 2);     // GPIOA Clock
 	Macro_Write_Block(GPIOA->CRH, 0xff, 0x22, 20);   // PA13,14
-
     BOTH_LED_OFF;
 
-    // Left, Right blinking interrupt 용 TIM3
-    // Left, Right LED에 대해 인터럽트 설정, 인터럽트 핸들러에서 반전
+    // Left, Right blinking : TIM4 Interrup handler
+    // Left, Right LED TIM4에서 count 도달시 반전시킴
 
 }
 void HeadLED_On(void)
@@ -62,11 +57,8 @@ void TailLED_Init(void)
     // 초기 출력(low)은 duty 100% (서있으므로)
     TIM4->CCR2 = 0;
     // OC2M : 110 (PWM1 mode)
-	// Macro_Write_Block(TIM4->CCMR1, 0x7, 0x6, 12);
 	// OC2PE : CCR preload enable
-    // Macro_Set_Bit(TIM4->CCMR1, 11);
     // CC2S : output
-	// Macro_Write_Block(TIM4->CCMR1, 0x3, 0x0, 8);
     Macro_Write_Block(TIM4->CCMR1, 0xff, 0x68, 8);
     // OUT pin : active high, output enable
 	Macro_Write_Block(TIM4->CCER, 0x3, 0x1, 4);

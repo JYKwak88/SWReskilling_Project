@@ -418,7 +418,6 @@ u8 NIGHT_CHANGED = 0;
 void ADC1_2_IRQHandler(void)
 {
   ILLUMINANCE = ADC1->DR;
-  // Uart_Printf("LIGHT LEVEL = 0x%x\n\r", ILLUMINANCE);
   if (NIGHT == 1 && ILLUMINANCE > 0xb00)
   {
     NIGHT = 0;

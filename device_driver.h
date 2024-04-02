@@ -70,14 +70,10 @@ void Uart1_Init(int baud);
 void Uart1_Send_Byte(char data);
 void Uart1_Send_String(char *pt);
 void Uart1_Printf(char *fmt,...);
-char Uart1_Get_Char(void);
-char Uart1_Get_Pressed(void);
 void Uart3_Init(int baud);
 void Uart3_Send_Byte(char data);
 void Uart3_Send_String(char *pt);
 void Uart3_Printf(char *fmt,...);
-char Uart3_Get_Char(void);
-char Uart3_Get_Pressed(void);
 
 // SysTick.c
 void SysTick_Delay_ms(u32 msec);

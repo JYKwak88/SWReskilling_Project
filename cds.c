@@ -13,8 +13,8 @@ void CDS_Init(void)
 	Macro_Write_Block(ADC1->SQR1, 0xF, 0x0, 20); 	// Conversion Sequence No = 1
 	Macro_Write_Block(ADC1->SQR3, 0x1F, 9, 0); 		// Sequence Channel of No 1 = CH9
 	Macro_Write_Block(ADC1->CR2, 0x7, 0x7, 17); 	// EXT Trigger = SW Trigger
-    // Macro_Set_Bit(ADC1->CR2, 1);                    // Continuous
-
+    // Macro_Set_Bit(ADC1->CR2, 1);                    // Continuous -> Single : 인터럽트 무한 발생하여 다른 동작 불가함
+	// TIM4 에서 count 도달시 trigger
 
     Macro_Clear_Bit(ADC1->SR, 1);                   // EOC Interrupt clear
     NVIC_ClearPendingIRQ(ADC1_2_IRQn);              // NVIC ADC Interrupt Pending clear
@@ -33,7 +33,7 @@ void CDS_Start(void)
 	Macro_Set_Bit(ADC1->CR2, 22); 					// ADC Start
 }
 
-// void CDS_Stop(void)
+// void CDS_Stop(void)	// 현재는 끌 필요가 없음
 // {
 // 	Macro_Clear_Bit(ADC1->CR2, 20); 				// EXT Trigger Stop
 // 	Macro_Clear_Bit(ADC1->CR2, 22); 				// ADC Stop

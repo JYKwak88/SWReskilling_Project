@@ -71,27 +71,6 @@ void Uart1_Printf(char *fmt,...)
 	va_end(ap);
 }
 
-char Uart1_Get_Pressed(void)
-{
-	if(Macro_Check_Bit_Set(USART1->SR, 5))
-	{
-		return (char)USART1->DR;
-	}
-
-	else
-	{
-		return (char)0;
-	}
-}
-
-char Uart1_Get_Char(void)
-{
-	char rx;
-
-	while((rx = Uart1_Get_Pressed()) == 0);
-
-	return rx;
-}
 
 void Uart3_Init(int baud)
 {
@@ -152,26 +131,4 @@ void Uart3_Printf(char *fmt,...)
 	vsprintf(string,fmt,ap);
 	Uart3_Send_String(string);
 	va_end(ap);
-}
-
-char Uart3_Get_Pressed(void)
-{
-	if(Macro_Check_Bit_Set(USART3->SR, 5))
-	{
-		return (char)USART3->DR;
-	}
-
-	else
-	{
-		return (char)0;
-	}
-}
-
-char Uart3_Get_Char(void)
-{
-	char rx;
-
-	while((rx = Uart3_Get_Pressed()) == 0);
-
-	return rx;
 }
