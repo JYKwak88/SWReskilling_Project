@@ -31,8 +31,16 @@ void H_R_LED_Init(void)
     // Left, Right LED에 대해 인터럽트 설정, 인터럽트 핸들러에서 반전
 
 }
-void HeadLED_On(void) { Macro_Clear_Bit(GPIOA->ODR, 4); }
-void HeadLED_Off(void) { Macro_Set_Bit(GPIOA->ODR, 4); }
+void HeadLED_On(void)
+{
+    Macro_Clear_Bit(GPIOA->ODR, 4);
+    Draw_monoBMP(LIGHT_ON_X, LIGHT_ON_Y, 24, 18, LIGHT_ON_COLOR, Img_Lighton, 0);
+}
+void HeadLED_Off(void)
+{
+    Macro_Set_Bit(GPIOA->ODR, 4);
+    Draw_monoBMP(LIGHT_ON_X, LIGHT_ON_Y, 24, 18, LIGHT_OFF_COLOR, Img_Lighton, 0);
+}
 void ReverseLED_On(void) { Macro_Clear_Bit(GPIOA->ODR, 5); }
 void ReverseLED_Off(void) { Macro_Set_Bit(GPIOA->ODR, 5); }
 

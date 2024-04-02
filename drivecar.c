@@ -135,7 +135,7 @@ void Drive_Car(u8 input)
         break;
     }
 
-    if (DRIVE_STATUS == 1 && FRONT_DISTANCE > 2000) Forward_Car();
+    if (DRIVE_STATUS == 1 && FRONT_DISTANCE > FRONT_LIMIT) Forward_Car();
     else if (DRIVE_STATUS == -1) Backward_Car();
     else Stop_Car();
     Draw_SpeedGage();

@@ -86,7 +86,7 @@ void _draw_circle_8(int xc, int yc, int x, int y, u16 c)
 	GUI_DrawPoint(xc - y, yc - x, c);
 }
 
-void gui_circle(int xc, int yc,u16 c,int r, int fill)   // center x,y, color, radius, (1)fill/(0)unfill
+void GUI_Circle(int xc, int yc,u16 c,int r, int fill)   // center x,y, color, radius, (1)fill/(0)unfill
 {
 	int x = 0, y = r, yi, d;
 	d = 3 - 2 * r;
@@ -256,31 +256,31 @@ void LCD_ShowString(u16 x,u16 y,u8 size,u8 *p,u8 mode)	// start x,y, font size, 
 
 void Draw_LeftArrow(void)
 {
-	POINT_COLOR = DARKGREEN;
 	Fill_Triangel(LEFT_X, LEFT_Y+ARROW_SIZE/2, LEFT_X+ARROW_SIZE/2, LEFT_Y, LEFT_X+ARROW_SIZE/2, LEFT_Y+ARROW_SIZE);
 	LCD_DrawFillRectangle(LEFT_X+ARROW_SIZE/2+1, LEFT_Y+ARROW_SIZE/4, LEFT_X+ARROW_SIZE, LEFT_Y+ARROW_SIZE*3/4-1);
 }
 
 void Draw_RightArrow(void)
 {
-	POINT_COLOR = DARKGREEN;
 	Fill_Triangel(RIGHT_X+ARROW_SIZE, RIGHT_Y+ARROW_SIZE/2, RIGHT_X+ARROW_SIZE/2, RIGHT_Y, RIGHT_X+ARROW_SIZE/2, RIGHT_Y+ARROW_SIZE);
 	LCD_DrawFillRectangle(RIGHT_X, RIGHT_Y+ARROW_SIZE/4, RIGHT_X+ARROW_SIZE/2, RIGHT_Y+ARROW_SIZE*3/4-1);
 }
 
 void Draw_Arrow(void)
 {
-	if (L_LED_CHECK_ON) Draw_LeftArrow();
-	else LCD_Fill(LEFT_X, LEFT_Y, LEFT_X + ARROW_SIZE, LEFT_Y + ARROW_SIZE, METER_BACK_COLOR);
-	if (R_LED_CHECK_ON) Draw_RightArrow();
-	else LCD_Fill(RIGHT_X, RIGHT_Y, RIGHT_X + ARROW_SIZE, RIGHT_Y + ARROW_SIZE, METER_BACK_COLOR);
+	if (L_LED_CHECK_ON) POINT_COLOR = DARKGREEN;
+	else POINT_COLOR = DARKGRAY;
+	Draw_LeftArrow();
+	if (R_LED_CHECK_ON) POINT_COLOR = DARKGREEN;
+	else POINT_COLOR = DARKGRAY;
+	Draw_RightArrow();
 
 }
 
-void Draw_Emergency(u8 emer)
+void Draw_Emergency(void)
 {
-	if (emer) POINT_COLOR = RED;
-	else POINT_COLOR = METER_BACK_COLOR;
+	if (EMERGENCY) POINT_COLOR = RED;
+	else POINT_COLOR = DARKGRAY;
 
 	u8 i;
 	for (i = 0; i <= METER_Z; i++)
@@ -290,20 +290,18 @@ void Draw_Emergency(u8 emer)
 	}
 }
 
-void GUI_DrawSpeedmeter(u16 x, u16 y, u16 fc, u16 bc)
+void Draw_monoBMP(u16 x, u16 y, u16 size_x, u16 size_y, u16 fc, const unsigned char * img, u8 grad)
 {
-    Draw_SpeedGage();
 	u16 i;
 	u8 j, k, l;
 	u16 x0=x;
-	u16 colortemp=POINT_COLOR;
-	LCD_SetWindows(x,y,x+96*METER_Z-1,y+88*METER_Z-1);
-	for(i=0;i<1056;i++)
+	POINT_COLOR=fc;
+	LCD_SetWindows(x,y,x+size_x*METER_Z-1,y+size_y*METER_Z-1);
+	for(i=0;i<size_x*size_y/8;i++)
 	{
 		for(j=0;j<8;j++)
 		{
-			POINT_COLOR=fc;
-			if(Img_Speedmeter[i]&(0x80>>j))
+			if(img[i]&(0x80>>j))
 			{
 				for (k = 0; k < METER_Z; k++)
 				{
@@ -315,16 +313,15 @@ void GUI_DrawSpeedmeter(u16 x, u16 y, u16 fc, u16 bc)
 			}
 			x+=METER_Z;
 
-			if((x-x0)==96*METER_Z)
+			if((x-x0)==size_x*METER_Z)
 			{
 				x=x0;
 				y+=METER_Z;
-				if (y%(6*METER_Z) ==0) fc -= 0x0841;
+				if (grad > 0 && y%(grad*METER_Z) == 0) POINT_COLOR -= 0x0841;
 				break;
 			}
 		}
 	}
-	POINT_COLOR=colortemp;
 	LCD_SetWindows(0,0,lcddev.width-1,lcddev.height-1);
 }
 
@@ -348,4 +345,20 @@ void Draw_SpeedGage(void)
 	if (SPEED == 4) Fill_Triangel(FOUR_X, FOUR_Y, METER_CENTER_X+METER_PIN_OFFSET*0.71+1, METER_CENTER_Y-METER_PIN_OFFSET*0.71, METER_CENTER_X+METER_PIN_OFFSET*0.71+1, METER_CENTER_Y+METER_PIN_OFFSET*0.71);	// 4
 	if (SPEED == 5) Fill_Triangel(FIVE_X, FIVE_Y, METER_CENTER_X, METER_CENTER_Y+METER_PIN_OFFSET, METER_CENTER_X+METER_PIN_OFFSET, METER_CENTER_Y);	// 5
 
+}
+
+void Draw_Frontsensor(void)
+{
+	if (FRONT_DISTANCE < FRONT_LIMIT) POINT_COLOR = RED;
+	else POINT_COLOR = DARKGRAY;
+
+	Draw_monoBMP(TOPVIEW_X, TOPVIEW_Y - 8*METER_Z, 24, 6, POINT_COLOR, Img_Wall, 0);
+}
+
+void Draw_Rearsensor(void)
+{
+	if (REAR_DISTANCE < REAR_LIMIT) POINT_COLOR = RED;
+	else POINT_COLOR = DARKGRAY;
+
+	Draw_monoBMP(TOPVIEW_X, TOPVIEW_Y + TOPVIEW_H + 2*METER_Z, 24, 6, POINT_COLOR, Img_Wall, 0);
 }

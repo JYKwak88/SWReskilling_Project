@@ -16,6 +16,7 @@ extern volatile u8 Uart3_Rx_Data;
 // ADC1_2
 extern volatile u32 ILLUMINANCE;	//외부 조도
 extern u8 NIGHT;			//1,야간; 0,주간
+extern u8 NIGHT_CHANGED;
 // TIM3
 extern volatile u16 FRONT_START_CCR;
 extern volatile u16 FRONT_END_CCR;
@@ -26,6 +27,7 @@ extern volatile u8 REAR_CAPTURED;
 
 // TIM4
 extern u16 BLINK_CNT;		//깜빡이 toggle 시점 cnt
+extern u8 BLINK_CHANGED;	//깜빡이 업데이트 필요
 extern s16 NO_INPUT_CNT;	//UART 입력 없음 판단용 cnt
 extern u8 CDS_WAIT_CNT;	//조도센서 측정 시점 cnt
 
@@ -193,20 +195,24 @@ void LCD_DrawLine(u16 x1, u16 y1, u16 x2, u16 y2);   //start x,y, end x,y
 void LCD_DrawRectangle(u16 x1, u16 y1, u16 x2, u16 y2);
 void LCD_DrawFillRectangle(u16 x1, u16 y1, u16 x2, u16 y2);
 void _draw_circle_8(int xc, int yc, int x, int y, u16 c);
-void gui_circle(int xc, int yc,u16 c,int r, int fill);   // center x,y, color, radius, (1)fill/(0)unfill
+void GUI_Circle(int xc, int yc,u16 c,int r, int fill);   // center x,y, color, radius, (1)fill/(0)unfill
 void Draw_Triangel(u16 x0,u16 y0,u16 x1,u16 y1,u16 x2,u16 y2);   // 삼각형 꼭지점 3개 좌표
 void Fill_Triangel(u16 x0,u16 y0,u16 x1,u16 y1,u16 x2,u16 y2);
 void LCD_ShowChar(u16 x,u16 y,u16 fc, u16 bc, u8 num,u8 size,u8 mode);	// start x,y, font color, background color, ascii-code, font size, (0)overlying/(1)non-overlying
 void LCD_ShowString(u16 x,u16 y,u8 size,u8 *p,u8 mode);	// start x,y, font size, string pointer, (0)overlying/(1)non-overlying
-void LCD_ShowMonobmp(u16 x,u16 y,u16 fc, u16 bc, u8 x_size, u8 y_size, u8 mode);
-void GUI_DrawSpeedmeter(u16 x, u16 y, u16 fc, u16 bc);
+void Draw_monoBMP(u16 x, u16 y, u16 size_x, u16 size_y, u16 fc, const unsigned char * img, u8 grad);
 void Draw_LeftArrow(void);
 void Draw_RightArrow(void);
 void Draw_Arrow(void);
-void Draw_Emergency(u8 emer);
+void Draw_Emergency(void);
 void Draw_SpeedGage(void);
+void Draw_Frontsensor(void);
+void Draw_Rearsensor(void);
 
 extern const unsigned char Img_Speedmeter[1056];
+extern const unsigned char Img_Lighton[54];
+extern const unsigned char Img_Topview[144];
+extern const unsigned char Img_Wall[18];
 
 // ultrasonic.c
 #define SEE_LEFT	(TIM4->CCR3 = TIM4->ARR * 9.8 / 100)

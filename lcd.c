@@ -391,8 +391,15 @@ void Screen_Init(void)
 		Show_Brightness();
 	}
 
-	GUI_DrawSpeedmeter(METER_CENTER_X-METER_W/2, METER_CENTER_Y-METER_H/2, METER_COLOR, METER_BACK_COLOR);
-	Draw_Emergency(EMERGENCY);
+	Draw_monoBMP(METER_CENTER_X-METER_W/2, METER_CENTER_Y-METER_H/2, 96, 88, METER_COLOR, Img_Speedmeter, 6);
+	Draw_SpeedGage();
+    Draw_monoBMP(LIGHT_ON_X, LIGHT_ON_Y, 24, 18, LIGHT_OFF_COLOR, Img_Lighton, 0);
+	Draw_Emergency();
+	Draw_Arrow();
+    Draw_monoBMP(TOPVIEW_X, TOPVIEW_Y, 24, 48, GRAY, Img_Topview, 0);
+	Draw_Frontsensor();
+	Draw_Rearsensor();
+
 
 }
 

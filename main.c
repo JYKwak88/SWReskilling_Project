@@ -35,7 +35,6 @@ void Main(void)
 	Motor_Init();
 	H_R_LED_Init();
 	TailLED_Init();
-	LED_Control();
 	CDS_Init();
 	Uart3_Init(9600);
 
@@ -51,6 +50,7 @@ void Main(void)
 
 	Help_Message_Uart();
 	Screen_Init();
+	LED_Control();
 
 	for(;;)
 	{
@@ -95,7 +95,7 @@ void Main(void)
 					if (input == 'y')
 					{
 						EMERGENCY ^= 1;
-						Draw_Emergency(EMERGENCY);
+						Draw_Emergency();
 					}
 					if (input == 'o') AUTO_LIGHT ^= 1;
 					if (input == 'p') LCD_AUTO_BRIGHTNESS ^= 1;
@@ -133,27 +133,40 @@ void Main(void)
 
 		}
 
+		if (NIGHT_CHANGED)
+		{
+    		LED_Control();
+			NIGHT_CHANGED = 0;
+		}
+
 		if (LCD_AUTO_BRIGHTNESS)
 		{
 			TIM4->CCR1 = TIM4->ARR * ILLUMINANCE / 0xfff;	// ADC resolution = 0xfff
 			LCD_BL_LEVEL = ILLUMINANCE * LCD_BL_STEP / 0xfff;
 			Show_Brightness();
 		}
-		else TIM4->CCR1 = TIM4->ARR * (LCD_BL_LEVEL + 1) / (LCD_BL_STEP + 1);
+		else
+		{
+			TIM4->CCR1 = TIM4->ARR * (LCD_BL_LEVEL + 1) / (LCD_BL_STEP + 1);
+		}
 
-		Draw_Arrow();
+		if (BLINK_CHANGED)
+		{
+			Draw_Arrow();
+			BLINK_CHANGED = 0;
+		}
 
 		if (FRONT_CAPTURED)
 		{
 			FRONT_CAPTURED = 0;
 		    FRONT_DISTANCE = (FRONT_START_CCR - FRONT_END_CCR) * 17;  // 거리 계산
-			if (FRONT_DISTANCE < 2000)
+			if (FRONT_DISTANCE < FRONT_LIMIT)
 			{
 				Uart_Printf("FRONT_DIST = %d mm\n\r", FRONT_DISTANCE);
 				if (DRIVE_STATUS == 1)
 				{
 					EMERGENCY = 1;
-					Draw_Emergency(EMERGENCY);
+					Draw_Emergency();
 					Drive_Car('0');
 					Print_State_Uart();
 					LED_Control();

@@ -39,3 +39,6 @@ enum _speed{back2=-2, back=-1, stop=0, one, two, three, four, five};
 #define TIM3_PLS_OF_10ms  	(10000/TIM3_TICK)
 #define TIM3_UE_PERIOD      (100000)              // usec
 #define TIM3_MAX	  		(18000/TIM3_TICK)
+
+#define FRONT_LIMIT (2000)
+#define REAR_LIMIT  (1500)

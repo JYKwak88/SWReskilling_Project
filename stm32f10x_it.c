@@ -414,6 +414,7 @@ void DMA1_Channel7_IRQHandler(void)
  *******************************************************************************/
 volatile u32 ILLUMINANCE = 0;
 u8 NIGHT = 0;
+u8 NIGHT_CHANGED = 0;
 void ADC1_2_IRQHandler(void)
 {
   ILLUMINANCE = ADC1->DR;
@@ -421,12 +422,12 @@ void ADC1_2_IRQHandler(void)
   if (NIGHT == 1 && ILLUMINANCE > 0xb00)
   {
     NIGHT = 0;
-    LED_Control();
+    NIGHT_CHANGED = 1;
   }
   else if (NIGHT == 0 && ILLUMINANCE < 0x900)
   {
     NIGHT = 1;
-    LED_Control();
+    NIGHT_CHANGED = 1;
   }
 
   Macro_Clear_Bit(ADC1->SR, 1);
@@ -607,7 +608,8 @@ void TIM3_IRQHandler(void)
  * Return         : None
  *******************************************************************************/
 u16 BLINK_CNT = 0;
-s16 NO_INPUT_CNT = 0;
+u8 BLINK_CHANGED = 0;
+s16 NO_INPUT_CNT = -1;
 u8 CDS_WAIT_CNT = 0;
 u8 USONIC_TRIG_CNT = 0;
 void TIM4_IRQHandler(void)
@@ -628,6 +630,7 @@ void TIM4_IRQHandler(void)
     {
       R_LED_INVERT;
     }
+    BLINK_CHANGED = 1;
     BLINK_CNT = 0;
   }
 
