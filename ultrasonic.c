@@ -62,7 +62,9 @@ void USONIC_ECHO_Init(void)
     // NVIC Interrupt Pending Clear => NVIC용 Macro 사용
     NVIC_ClearPendingIRQ(TIM3_IRQn);
     // TIM3->DIER TIM3 CH1,2 Capture/Compare Interrupt Enable
-    Macro_Set_Area(TIM3->DIER, 0x3, 1);
+    // Macro_Set_Area(TIM3->DIER, 0x3, 1);
+    // TIM3->DIER TIM3 CH1만 enable
+    Macro_Set_Bit(TIM3->DIER, 1);
     // NVIC Interrupt Enable => NVIC용 Macro 사용
     NVIC_EnableIRQ(TIM3_IRQn);
 

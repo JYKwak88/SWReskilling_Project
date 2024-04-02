@@ -42,6 +42,8 @@ extern u8 LCD_AUTO_BRIGHTNESS;	//외부조도에 따른 자동 LCD 밝기 조절
 extern u8 LCD_BL_LEVEL;		//LCD 밝기 단계 (max = LCD_BL_STEP, defined)
 extern u32 FRONT_DISTANCE;
 extern u32 REAR_DISTANCE;
+extern u8 FRONT_STATE;
+extern u8 REAR_STATE;
 
 // clock.c
 void Clock_Init(void);

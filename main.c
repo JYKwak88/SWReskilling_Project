@@ -20,6 +20,8 @@ u8 LCD_BL_LEVEL = 0;
 u8 METER_Z = 2;
 u32 FRONT_DISTANCE = 0;  // unit : mm
 u32 REAR_DISTANCE = 0;  // unit : mm
+u8 FRONT_STATE = 0;
+u8 REAR_STATE = 0;
 
 void Main(void)
 {
@@ -145,7 +147,7 @@ void Main(void)
 			LCD_BL_LEVEL = ILLUMINANCE * LCD_BL_STEP / 0xfff;
 			Show_Brightness();
 		}
-		else
+		else if (input == '[' || input == ']')
 		{
 			TIM4->CCR1 = TIM4->ARR * (LCD_BL_LEVEL + 1) / (LCD_BL_STEP + 1);
 		}
@@ -160,9 +162,11 @@ void Main(void)
 		{
 			FRONT_CAPTURED = 0;
 		    FRONT_DISTANCE = (FRONT_START_CCR - FRONT_END_CCR) * 17;  // 거리 계산
-			if (FRONT_DISTANCE < FRONT_LIMIT)
+			if (FRONT_STATE == 0 && FRONT_DISTANCE < FRONT_LIMIT)
 			{
+				FRONT_STATE = 1;
 				Uart_Printf("FRONT_DIST = %d mm\n\r", FRONT_DISTANCE);
+				Draw_Frontsensor();
 				if (DRIVE_STATUS == 1)
 				{
 					EMERGENCY = 1;
@@ -171,6 +175,37 @@ void Main(void)
 					Print_State_Uart();
 					LED_Control();
 				}
+			}
+			else if (FRONT_STATE == 1 && FRONT_DISTANCE > FRONT_LIMIT)
+			{
+				FRONT_STATE = 0;
+				Uart_Printf("FRONT_DIST = %d mm\n\r", FRONT_DISTANCE);
+				Draw_Frontsensor();
+			}
+		}
+		if (REAR_CAPTURED)
+		{
+			REAR_CAPTURED = 0;
+		    REAR_DISTANCE = (REAR_START_CCR - REAR_END_CCR) * 17;  // 거리 계산
+			if (REAR_STATE == 0 && REAR_DISTANCE < REAR_LIMIT)
+			{
+				REAR_STATE = 1;
+				Uart_Printf("REAR_DIST = %d mm\n\r", REAR_DISTANCE);
+				Draw_Rearsensor();
+				if (DRIVE_STATUS == -1)
+				{
+					EMERGENCY = 1;
+					Draw_Emergency();
+					Drive_Car('0');
+					Print_State_Uart();
+					LED_Control();
+				}
+			}
+			else if (REAR_STATE == 1 && REAR_DISTANCE > REAR_LIMIT)
+			{
+				REAR_STATE = 0;
+				Uart_Printf("REAR_DIST = %d mm\n\r", REAR_DISTANCE);
+				Draw_Rearsensor();
 			}
 		}
 

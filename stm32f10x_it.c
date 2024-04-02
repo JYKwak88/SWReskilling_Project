@@ -592,12 +592,37 @@ void TIM3_IRQHandler(void)
       FRONT_END_CCR = TIM3->CCR1;   // 거리측정 끝의 CNT
       FRONT_CAPTURED = 1;   // 측정완료를 알림
       Macro_Clear_Bit(TIM3->CCER, 1);   // rising edge capture 로 변경
+
+      // Front capture 중단, Rear capture 시작
+      Macro_Clear_Bit(TIM3->DIER, 1);
+      Macro_Set_Bit(TIM3->DIER, 2);
     }
 	  Macro_Clear_Bit(TIM3->SR, 1);   // TIM3_CH1 Interrupt 클리어
+    NVIC_ClearPendingIRQ(TIM3_IRQn);
+  }
+
+  if (Macro_Check_Bit_Set(TIM3->SR, 2))   // TIM3_CH2 Interrupt
+  {
+    if (Macro_Check_Bit_Clear(TIM3->CCER, 5))   // rising edge capture 상태였으면
+    {
+      REAR_START_CCR = TIM3->CCR2;   // 거리측정 시작의 CNT
+      Macro_Set_Bit(TIM3->CCER, 5);   // falling edge capture 로 변경
+    }
+    else    // falling edge capture 상태였으면
+    {
+      REAR_END_CCR = TIM3->CCR2;   // 거리측정 끝의 CNT
+      REAR_CAPTURED = 1;   // 측정완료를 알림
+      Macro_Clear_Bit(TIM3->CCER, 5);   // rising edge capture 로 변경
+
+      // Rear capture 중단, Front capture 시작
+      Macro_Clear_Bit(TIM3->DIER, 2);
+      Macro_Set_Bit(TIM3->DIER, 1);
+    }
+	  Macro_Clear_Bit(TIM3->SR, 2);   // TIM3_CH1 Interrupt 클리어
+    NVIC_ClearPendingIRQ(TIM3_IRQn);
   }
 
 
-  NVIC_ClearPendingIRQ(TIM3_IRQn);
 }
 
 /*******************************************************************************

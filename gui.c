@@ -349,7 +349,7 @@ void Draw_SpeedGage(void)
 
 void Draw_Frontsensor(void)
 {
-	if (FRONT_DISTANCE < FRONT_LIMIT) POINT_COLOR = RED;
+	if (FRONT_STATE) POINT_COLOR = RED;
 	else POINT_COLOR = DARKGRAY;
 
 	Draw_monoBMP(TOPVIEW_X, TOPVIEW_Y - 8*METER_Z, 24, 6, POINT_COLOR, Img_Wall, 0);
@@ -357,7 +357,7 @@ void Draw_Frontsensor(void)
 
 void Draw_Rearsensor(void)
 {
-	if (REAR_DISTANCE < REAR_LIMIT) POINT_COLOR = RED;
+	if (REAR_STATE) POINT_COLOR = RED;
 	else POINT_COLOR = DARKGRAY;
 
 	Draw_monoBMP(TOPVIEW_X, TOPVIEW_Y + TOPVIEW_H + 2*METER_Z, 24, 6, POINT_COLOR, Img_Wall, 0);

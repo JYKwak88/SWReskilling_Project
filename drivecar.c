@@ -41,7 +41,7 @@ void Help_Message_Uart(void)
     Uart_Printf("                |  x:go back, speed--     |\n\r");
     Uart_Printf("= Light Control =\n\r");
     Uart_Printf("l:toggle light    |  o:toggle auto light  |  y:emergency light\n\r");
-    Uart_Printf("p:auto brightness |   [,]:brightness -/+\n\r");
+    Uart_Printf("p:auto brightness |  [,]:brightness -/+\n\r");
     Uart_Printf("\n\r");
     Print_State_Uart();
 }
@@ -135,8 +135,8 @@ void Drive_Car(u8 input)
         break;
     }
 
-    if (DRIVE_STATUS == 1 && FRONT_DISTANCE > FRONT_LIMIT) Forward_Car();
-    else if (DRIVE_STATUS == -1) Backward_Car();
+    if (DRIVE_STATUS == 1 && !FRONT_STATE) Forward_Car();
+    else if (DRIVE_STATUS == -1 && !REAR_STATE) Backward_Car();
     else Stop_Car();
     Draw_SpeedGage();
 }
