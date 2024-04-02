@@ -22,6 +22,7 @@ u32 FRONT_DISTANCE = 0;  // unit : mm
 u32 REAR_DISTANCE = 0;  // unit : mm
 u8 FRONT_STATE = 0;
 u8 REAR_STATE = 0;
+u8 SELF_DRIVE = 0;
 
 void Main(void)
 {
@@ -76,6 +77,7 @@ void Main(void)
 				DIRECTION = center;
 			}
 
+
 			if (input != pre_input)
 			{
 				switch (input)
@@ -90,6 +92,7 @@ void Main(void)
 				case 'x':
 				case 'a': case 'd':
 					Drive_Car(input);
+					if (SELF_DRIVE) SELF_DRIVE = 0;
 					break;
 
 				// LED, LCD 상태 변경 입력
@@ -127,6 +130,8 @@ void Main(void)
 					METER_Z ^= 3;// 1 <-> 2
 					Screen_Init();
 					break;
+				case '7':
+					SELF_DRIVE = 1;
 				default:
 					Uart_Printf("[%c] is Wrong Input\n\r", input);
     				Uart_Printf("Press 'H' key if you see the key guide\n\r");
@@ -214,6 +219,7 @@ void Main(void)
 			}
 		}
 
+		if (SELF_DRIVE) Self_Driving();
 	}
 
 }

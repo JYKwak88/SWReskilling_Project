@@ -219,3 +219,6 @@ extern const unsigned char Img_Wall[18];
 void Servo_Init(void);
 void USONIC_TRIG_Init(void);
 void USONIC_ECHO_Init(void);
+
+// selfdriving.c
+void Self_Driving(void);
