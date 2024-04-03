@@ -7,33 +7,6 @@ static void Sys_Init(void)
 
 	SCB->VTOR = 0x08003000;
 	SCB->SHCSR = 0;
-}
-
-enum _status DRIVE_STATUS = idle;
-enum _direction DIRECTION = center;
-enum _speed SPEED = stop;
-u8 LIGHT_ON = 0;
-u8 EMERGENCY = 0;
-u8 AUTO_LIGHT = 1;
-u8 LCD_AUTO_BRIGHTNESS = 1;
-u8 LCD_BL_LEVEL = 0;
-u8 METER_Z = 2;
-u32 FRONT_DISTANCE = 0;  // unit : mm
-u32 REAR_DISTANCE = 0;  // unit : mm
-u8 FRONT_STATE = 0;
-u8 REAR_STATE = 0;
-u8 SELF_DRIVE = 0;
-
-void Main(void)
-{
-
-	Sys_Init();
-	u8 input = 0;
-	u8 pre_input = '0';
-
-	DRIVE_STATUS = idle;
-	DIRECTION = center;
-	SPEED = stop;
 
 	// Init 순서 유지할 것
 	Motor_Init();
@@ -47,6 +20,32 @@ void Main(void)
 	USONIC_ECHO_Init();
 
 	LCD_Init();
+}
+
+enum _status DRIVE_STATUS = idle;
+enum _direction DIRECTION = center;
+enum _speed SPEED = stop;
+u8 LIGHT_ON = 0;
+u8 EMERGENCY = 0;
+u8 AUTO_LIGHT = 1;
+u8 LCD_AUTO_BRIGHTNESS = 1;
+u8 LCD_BL_LEVEL = 0;
+u8 METER_Z = 2;
+u32 FRONT_DISTANCE = 0;  // unit : mm
+u32 REAR_DISTANCE = 0;  // unit : mm
+u8 FRONT_DETECT = 0;
+u8 REAR_DETECT = 0;
+u8 SELF_DRIVE = 0;
+
+void Main(void)
+{
+	Sys_Init();
+	u8 input = 0;
+	u8 pre_input = '0';
+
+	DRIVE_STATUS = idle;
+	DIRECTION = center;
+	SPEED = stop;
 
 #if (!DEV)
 	Wait_Bluetooth_Connect();
@@ -58,13 +57,6 @@ void Main(void)
 
 	for(;;)
 	{
-		/* 키 입력 눌리는 동안만 구동하는 방식을 하려고 했으나... */
-		/* 터미널프로그램은 동시입력 지원이 안되고, 키 릴리즈 이벤트를 보낼 수 없다
-		   때문에, 전진키, 후진키 한번으로 0번방향으로 출발하고, 중간에 단수 설정 가능하고
-		   전진 중 후진 누르면 멈추고, 후진 중 전진 누르면 멈추고 0,x 키도 멈추고
-		   왼쪽, 오른쪽만 방향 계속 유지하도록 해야함
-		*/
-
 		if (Uart_Rx_In)
 		{
 			input = Uart_Rx_Data;
@@ -75,6 +67,7 @@ void Main(void)
 			{
 				NO_INPUT_CNT = -1;
 				DIRECTION = center;
+				SEE_CENTER;
 			}
 
 
@@ -92,23 +85,31 @@ void Main(void)
 				case 'x':
 				case 'a': case 'd':
 					Drive_Car(input);
-					if (SELF_DRIVE) SELF_DRIVE = 0;
 					break;
 
 				// LED, LCD 상태 변경 입력
 				case 'l': case 'y': case 'o': case 'p':
-					if (input == 'l') LIGHT_ON ^= 1;
+					if (input == 'l')
+					{
+						LIGHT_ON ^= 1;
+						Uart_Printf("LIGHT(%d)\n\r", LIGHT_ON);
+					}
 					if (input == 'y')
 					{
 						EMERGENCY ^= 1;
 						Draw_Emergency();
+						Uart_Printf("EMERGENCY(%d)\n\r", EMERGENCY);
 					}
-					if (input == 'o') AUTO_LIGHT ^= 1;
-					if (input == 'p') LCD_AUTO_BRIGHTNESS ^= 1;
-					Uart_Printf("LIGHT_ON(%d)\n\r", LIGHT_ON);
-					Uart_Printf("EMERGENCY(%d)\n\r", EMERGENCY);
-					Uart_Printf("AUTO_LIGHT(%d)\n\r", AUTO_LIGHT);
-					Uart_Printf("LCD_AUTO_BRIGHTNESS(%d)\n\r", LCD_AUTO_BRIGHTNESS);
+					if (input == 'o')
+					{
+						AUTO_LIGHT ^= 1;
+						Uart_Printf("AUTO_LIGHT(%d)\n\r", AUTO_LIGHT);
+					}
+					if (input == 'p')
+					{
+						LCD_AUTO_BRIGHTNESS ^= 1;
+						Uart_Printf("LCD_AUTO_BRIGHTNESS(%d)\n\r", LCD_AUTO_BRIGHTNESS);
+					}
 					LCD_LED_Toggle_Info();
 					break;
 
@@ -117,7 +118,7 @@ void Main(void)
 					if (LCD_AUTO_BRIGHTNESS)
 					{
 						LCD_AUTO_BRIGHTNESS = 0;
-						Uart_Printf("LCD_AUTO_BRIGHTNESS DISABLE\n\r");
+						Uart_Printf("LCD_AUTO_BRIGHTNESS(%d)\n\r", LCD_AUTO_BRIGHTNESS);
 					}
 					if 		(input == '[' && LCD_BL_LEVEL > 0) 			 LCD_BL_LEVEL--;
 					else if (input == ']' && LCD_BL_LEVEL < LCD_BL_STEP) LCD_BL_LEVEL++;
@@ -128,10 +129,13 @@ void Main(void)
 
 				case 'h':
 					METER_Z ^= 3;// 1 <-> 2
+					Help_Message_Uart();
 					Screen_Init();
 					break;
-				case '7':
-					SELF_DRIVE = 1;
+				// case '7':
+				// 	SELF_DRIVE ^= 1;
+				// 	Uart_Printf("SELF_DRIVE = %d\n\r", SELF_DRIVE);
+				// 	break;
 				default:
 					Uart_Printf("[%c] is Wrong Input\n\r", input);
     				Uart_Printf("Press 'H' key if you see the key guide\n\r");
@@ -164,6 +168,9 @@ void Main(void)
 
 		if (BLINK_CHANGED)
 		{
+			if (EMERGENCY == 1) BOTH_LED_INVERT;
+    		else if (DIRECTION == -1) L_LED_INVERT;
+    		else if (DIRECTION == 1) R_LED_INVERT;
 			Draw_Arrow();
 			BLINK_CHANGED = 0;
 		}
@@ -171,55 +178,61 @@ void Main(void)
 		if (FRONT_CAPTURED)
 		{
 			FRONT_CAPTURED = 0;
-		    FRONT_DISTANCE = (FRONT_START_CCR - FRONT_END_CCR) * 17;  // 거리 계산
-			if (FRONT_STATE == 0 && FRONT_DISTANCE < FRONT_LIMIT)
+		    FRONT_DISTANCE = (FRONT_START_CCR - FRONT_END_CCR) * 1.7;  // 거리 계산
+			if (FRONT_DISTANCE < 0 || FRONT_DISTANCE > 3000) FRONT_DISTANCE = 3000;
+			// Uart_Printf("FRONTDIST = %4d mm, REARDIST = %4d mm\n\r", FRONT_DISTANCE, REAR_DISTANCE);
+
+			if (FRONT_DETECT == 0 && FRONT_DISTANCE < FRONT_LIMIT)
 			{
-				FRONT_STATE = 1;
-				Uart_Printf("You Cannot Go Forward, FRONT_DIST = %d mm\n\r", FRONT_DISTANCE);
+				FRONT_DETECT = 1;
+				Uart_Printf("FRONT_DIST=%4dmm(%d)\n\r", FRONT_DISTANCE, FRONT_DETECT);
 				Draw_Frontsensor();
 				if (DRIVE_STATUS == 1)
 				{
+					Drive_Car('0');
 					EMERGENCY = 1;
 					Draw_Emergency();
-					Drive_Car('0');
 					Print_State_Uart();
 					LED_Control();
 				}
 			}
-			else if (FRONT_STATE == 1 && FRONT_DISTANCE > FRONT_LIMIT)
+			else if (FRONT_DETECT == 1 && FRONT_DISTANCE > FRONT_LIMIT)
 			{
-				FRONT_STATE = 0;
-				Uart_Printf("You Can Go Forward, FRONT_DIST = %d mm\n\r", FRONT_DISTANCE);
+				FRONT_DETECT = 0;
+				Uart_Printf("FRONT_DIST=%4dmm(%d)\n\r", FRONT_DISTANCE, FRONT_DETECT);
 				Draw_Frontsensor();
 			}
 		}
 		if (REAR_CAPTURED)
 		{
 			REAR_CAPTURED = 0;
-		    REAR_DISTANCE = (REAR_START_CCR - REAR_END_CCR) * 17;  // 거리 계산
-			if (REAR_STATE == 0 && REAR_DISTANCE < REAR_LIMIT)
+		    REAR_DISTANCE = (REAR_START_CCR - REAR_END_CCR) * 1.7;  // 거리 계산
+			if (REAR_DISTANCE < 0 || REAR_DISTANCE > 3000) REAR_DISTANCE = 3000;
+			// Uart_Printf("FRONTDIST = %4d mm, REARDIST = %4d mm\n\r", FRONT_DISTANCE, REAR_DISTANCE);
+
+			if (REAR_DETECT == 0 && REAR_DISTANCE < REAR_LIMIT)
 			{
-				REAR_STATE = 1;
-				Uart_Printf("You Cannot Go Backward, REAR_DIST = %d mm\n\r", REAR_DISTANCE);
+				REAR_DETECT = 1;
+				Uart_Printf("REAR_DIST=%4dmm(%d)\n\r", REAR_DISTANCE, REAR_DETECT);
 				Draw_Rearsensor();
 				if (DRIVE_STATUS == -1)
 				{
+					Drive_Car('0');
 					EMERGENCY = 1;
 					Draw_Emergency();
-					Drive_Car('0');
 					Print_State_Uart();
 					LED_Control();
 				}
 			}
-			else if (REAR_STATE == 1 && REAR_DISTANCE > REAR_LIMIT)
+			else if (REAR_DETECT == 1 && REAR_DISTANCE > REAR_LIMIT)
 			{
-				REAR_STATE = 0;
-				Uart_Printf("You Can Go Backward, REAR_DIST = %d mm\n\r", REAR_DISTANCE);
+				REAR_DETECT = 0;
+				Uart_Printf("REAR_DIST=%4dmm(%d)\n\r", REAR_DISTANCE, REAR_DETECT);
 				Draw_Rearsensor();
 			}
 		}
 
-		if (SELF_DRIVE) Self_Driving();
+		// if (SELF_DRIVE) Self_Driving();
 	}
 
 }

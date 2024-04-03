@@ -617,7 +617,7 @@ void TIM3_IRQHandler(void)
       Macro_Clear_Bit(TIM3->DIER, 2);
       Macro_Set_Bit(TIM3->DIER, 1);
     }
-	  Macro_Clear_Bit(TIM3->SR, 2);   // TIM3_CH1 Interrupt 클리어
+	  Macro_Clear_Bit(TIM3->SR, 2);   // TIM3_CH2 Interrupt 클리어
     NVIC_ClearPendingIRQ(TIM3_IRQn);
   }
 
@@ -639,39 +639,20 @@ u8 USONIC_TRIG_CNT = 0;
 void TIM4_IRQHandler(void)
 {
   BLINK_CNT++;
-  CDS_WAIT_CNT++;
-  if (BLINK_CNT > 500000/TIM4_UE_PERIOD)
+  if (BLINK_CNT >= 500000/TIM4_UE_PERIOD)    // 500ms 마다 깜빡이
   {
-    if (EMERGENCY == 1)
-    {
-      BOTH_LED_INVERT;
-    }
-    else if (DIRECTION == -1)
-    {
-      L_LED_INVERT;
-    }
-    else if (DIRECTION == 1)
-    {
-      R_LED_INVERT;
-    }
     BLINK_CHANGED = 1;
     BLINK_CNT = 0;
   }
 
-  if (NO_INPUT_CNT > 300000/TIM4_UE_PERIOD)
+  if (NO_INPUT_CNT >= 300000/TIM4_UE_PERIOD)   // 300ms동안 입력이 없으면 가상입력으로 0을 보냄
   {
     Uart_Rx_In = 1;
     Uart_Rx_Data = 0;
   }
   else if (NO_INPUT_CNT > 0) NO_INPUT_CNT++;
 
-  if (CDS_WAIT_CNT > 20000/TIM4_UE_PERIOD)  // ADC 트리거를 자주 할 수록, BLU 변화가 부드러워짐
-  {
-    Macro_Set_Bit(ADC1->CR2, 22); 					// CDS Start (SW Trigger, EXTTRIG==1 일때만 됨)
-    CDS_WAIT_CNT = 0;
-  }
-
-  if (USONIC_TRIG_CNT >= 100000/TIM4_UE_PERIOD)
+  if (USONIC_TRIG_CNT >= 100000/TIM4_UE_PERIOD) // 100ms 마다 초음파센서 트리거
   {
     USONIC_TRIG_CNT = 1;
     TIM4->CCR4 = TIM4->ARR - 1;
@@ -680,6 +661,13 @@ void TIM4_IRQHandler(void)
   {
     TIM4->CCR4 = TIM4->ARR;
     USONIC_TRIG_CNT++;
+  }
+
+  CDS_WAIT_CNT++;
+  if (CDS_WAIT_CNT > 20000/TIM4_UE_PERIOD)  // ADC 트리거를 자주 할 수록, BLU 변화가 부드러워짐 (20ms+20ms)
+  {
+    Macro_Set_Bit(ADC1->CR2, 22); 					// CDS Start (SW Trigger, EXTTRIG==1 일때만 됨)
+    CDS_WAIT_CNT = 0;
   }
 
 	Macro_Clear_Bit(TIM4->SR, 0);

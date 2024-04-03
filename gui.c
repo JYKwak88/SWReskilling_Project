@@ -61,17 +61,12 @@ void LCD_DrawLine(u16 x1, u16 y1, u16 x2, u16 y2)   //start x,y, end x,y
 	}
 }
 
-void LCD_DrawRectangle(u16 x1, u16 y1, u16 x2, u16 y2)
+void Draw_Rectangle(u16 x1, u16 y1, u16 x2, u16 y2)
 {
 	LCD_DrawLine(x1,y1,x2,y1);
 	LCD_DrawLine(x1,y1,x1,y2);
 	LCD_DrawLine(x1,y2,x2,y2);
 	LCD_DrawLine(x2,y1,x2,y2);
-}
-
-void LCD_DrawFillRectangle(u16 x1, u16 y1, u16 x2, u16 y2)
-{
-	LCD_Fill(x1,y1,x2,y2,POINT_COLOR);
 }
 
 void _draw_circle_8(int xc, int yc, int x, int y, u16 c)
@@ -86,7 +81,7 @@ void _draw_circle_8(int xc, int yc, int x, int y, u16 c)
 	GUI_DrawPoint(xc - y, yc - x, c);
 }
 
-void GUI_Circle(int xc, int yc,u16 c,int r, int fill)   // center x,y, color, radius, (1)fill/(0)unfill
+void Draw_Circle(int xc, int yc,u16 c,int r, int fill)   // center x,y, color, radius, (1)fill/(0)unfill
 {
 	int x = 0, y = r, yi, d;
 	d = 3 - 2 * r;
@@ -257,13 +252,13 @@ void LCD_ShowString(u16 x,u16 y,u8 size,u8 *p,u8 mode)	// start x,y, font size, 
 void Draw_LeftArrow(void)
 {
 	Fill_Triangel(LEFT_X, LEFT_Y+ARROW_SIZE/2, LEFT_X+ARROW_SIZE/2, LEFT_Y, LEFT_X+ARROW_SIZE/2, LEFT_Y+ARROW_SIZE);
-	LCD_DrawFillRectangle(LEFT_X+ARROW_SIZE/2+1, LEFT_Y+ARROW_SIZE/4, LEFT_X+ARROW_SIZE, LEFT_Y+ARROW_SIZE*3/4-1);
+	LCD_Fill(LEFT_X+ARROW_SIZE/2+1, LEFT_Y+ARROW_SIZE/4, LEFT_X+ARROW_SIZE, LEFT_Y+ARROW_SIZE*3/4-1, POINT_COLOR);
 }
 
 void Draw_RightArrow(void)
 {
 	Fill_Triangel(RIGHT_X+ARROW_SIZE, RIGHT_Y+ARROW_SIZE/2, RIGHT_X+ARROW_SIZE/2, RIGHT_Y, RIGHT_X+ARROW_SIZE/2, RIGHT_Y+ARROW_SIZE);
-	LCD_DrawFillRectangle(RIGHT_X, RIGHT_Y+ARROW_SIZE/4, RIGHT_X+ARROW_SIZE/2, RIGHT_Y+ARROW_SIZE*3/4-1);
+	LCD_Fill(RIGHT_X, RIGHT_Y+ARROW_SIZE/4, RIGHT_X+ARROW_SIZE/2, RIGHT_Y+ARROW_SIZE*3/4-1, POINT_COLOR);
 }
 
 void Draw_Arrow(void)
@@ -349,7 +344,7 @@ void Draw_SpeedGage(void)
 
 void Draw_Frontsensor(void)
 {
-	if (FRONT_STATE) POINT_COLOR = RED;
+	if (FRONT_DETECT) POINT_COLOR = RED;
 	else POINT_COLOR = DARKGRAY;
 
 	Draw_monoBMP(TOPVIEW_X, TOPVIEW_Y - 8*METER_Z, 24, 6, POINT_COLOR, Img_Wall, 0);
@@ -357,7 +352,7 @@ void Draw_Frontsensor(void)
 
 void Draw_Rearsensor(void)
 {
-	if (REAR_STATE) POINT_COLOR = RED;
+	if (REAR_DETECT) POINT_COLOR = RED;
 	else POINT_COLOR = DARKGRAY;
 
 	Draw_monoBMP(TOPVIEW_X, TOPVIEW_Y + TOPVIEW_H + 2*METER_Z, 24, 6, POINT_COLOR, Img_Wall, 0);

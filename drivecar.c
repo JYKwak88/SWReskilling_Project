@@ -7,7 +7,7 @@ void Wait_Bluetooth_Connect(void)
     POINT_COLOR = SKYBLUE;
     for (t = 10; t <= 20; t++)
     {
-        LCD_DrawRectangle(t,t,LCD_H-t,LCD_W-t);
+        Draw_Rectangle(t,t,LCD_H-t,LCD_W-t);
     }
 
     LCD_ShowString(t+3, t+1,      16, (u8*)"Wait for Bluetooth Connecting...", 1);
@@ -48,7 +48,7 @@ void Help_Message_Uart(void)
 
 void Print_State_Uart(void)
 {
-    Uart_Printf("DRIVE_STATUS(%2d)\n\rDIRECTION(%2d)\n\rSPEED(%2d)\n\r", DRIVE_STATUS, DIRECTION, SPEED);
+    Uart_Printf("MOV(%2d)|DIR(%2d)|SPD(%2d)\n\r\n\r", DRIVE_STATUS, DIRECTION, SPEED);
 }
 
 void Forward_Car(void)
@@ -86,13 +86,15 @@ void Turn_Car(u8 input)
     {
         Uart_Printf("TURN LEFT\n\r");
         DIRECTION = -1;
-        SEE_LEFT;
+        if (DRIVE_STATUS == -1) SEE_RIGHT;
+        else SEE_LEFT;
     }
     else if (input == 'd')
     {
         Uart_Printf("TURN RIGHT\n\r");
         DIRECTION = 1;
-        SEE_RIGHT;
+        if (DRIVE_STATUS == -1) SEE_LEFT;
+        else SEE_RIGHT;
     }
 
     if (SPEED == 0)
@@ -135,8 +137,8 @@ void Drive_Car(u8 input)
         break;
     }
 
-    if (DRIVE_STATUS == 1 && !FRONT_STATE) Forward_Car();
-    else if (DRIVE_STATUS == -1 && !REAR_STATE) Backward_Car();
+    if (DRIVE_STATUS == 1 && !FRONT_DETECT) Forward_Car();
+    else if (DRIVE_STATUS == -1 && !REAR_DETECT) Backward_Car();
     else Stop_Car();
     Draw_SpeedGage();
 }

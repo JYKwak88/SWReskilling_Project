@@ -340,7 +340,7 @@ void Screen_Init(void)
 		LCD_ShowString(x+105,y*2+8,y,(u8*)("ON"),1);
 
 		POINT_COLOR = LIGHTBLUE;
-		LCD_DrawRectangle(x+104,y*1+8,x+105+48,y*3+8-1);
+		Draw_Rectangle(x+104,y*1+8,x+105+48,y*3+8-1);
 		u16 sw, sh, ew, eh;
 		sw = x+50; sh = y*1+8; ew = x+104; eh = sh;
 		LCD_DrawLine(sw, sh, ew, eh);

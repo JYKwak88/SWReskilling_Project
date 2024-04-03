@@ -42,8 +42,8 @@ extern u8 LCD_AUTO_BRIGHTNESS;	//외부조도에 따른 자동 LCD 밝기 조절
 extern u8 LCD_BL_LEVEL;		//LCD 밝기 단계 (max = LCD_BL_STEP, defined)
 extern u32 FRONT_DISTANCE;
 extern u32 REAR_DISTANCE;
-extern u8 FRONT_STATE;
-extern u8 REAR_STATE;
+extern u8 FRONT_DETECT;
+extern u8 REAR_DETECT;
 
 // clock.c
 void Clock_Init(void);
@@ -104,10 +104,10 @@ void TailLED_Release(void);
 #define BOTH_LED_ON
 #define L_LED_OFF			(Macro_Set_Bit(BLINK_PORT->ODR, L_LED_PIN))
 #define R_LED_OFF			(Macro_Set_Bit(BLINK_PORT->ODR, R_LED_PIN))
-#define BOTH_LED_OFF		(Macro_Set_Area(BLINK_PORT->ODR, 0x3, L_LED_PIN))		// 안쓰는게 좋겠음
+#define BOTH_LED_OFF		(Macro_Set_Area(BLINK_PORT->ODR, 0x3, L_LED_PIN))
 #define L_LED_INVERT		(Macro_Invert_Bit(BLINK_PORT->ODR, L_LED_PIN))
 #define R_LED_INVERT		(Macro_Invert_Bit(BLINK_PORT->ODR, R_LED_PIN))
-#define BOTH_LED_INVERT		(Macro_Invert_Area(BLINK_PORT->ODR, 0x3, L_LED_PIN))	// 안쓰는게 좋겠음
+#define BOTH_LED_INVERT		(Macro_Invert_Area(BLINK_PORT->ODR, 0x3, L_LED_PIN))
 #define L_LED_CHECK_ON		(Macro_Check_Bit_Clear(BLINK_PORT->ODR, L_LED_PIN))
 #define R_LED_CHECK_ON		(Macro_Check_Bit_Clear(BLINK_PORT->ODR, R_LED_PIN))
 
@@ -190,10 +190,8 @@ void Show_Brightness(void);
 void GUI_DrawPoint(u16 x,u16 y,u16 color);
 void LCD_Fill(u16 sx,u16 sy,u16 ex,u16 ey,u16 color);    //start x,y, end x,y, color
 void LCD_DrawLine(u16 x1, u16 y1, u16 x2, u16 y2);   //start x,y, end x,y
-void LCD_DrawRectangle(u16 x1, u16 y1, u16 x2, u16 y2);
-void LCD_DrawFillRectangle(u16 x1, u16 y1, u16 x2, u16 y2);
-void _draw_circle_8(int xc, int yc, int x, int y, u16 c);
-void GUI_Circle(int xc, int yc,u16 c,int r, int fill);   // center x,y, color, radius, (1)fill/(0)unfill
+void Draw_Rectangle(u16 x1, u16 y1, u16 x2, u16 y2);
+void Draw_Circle(int xc, int yc,u16 c,int r, int fill);   // center x,y, color, radius, (1)fill/(0)unfill
 void Draw_Triangel(u16 x0,u16 y0,u16 x1,u16 y1,u16 x2,u16 y2);   // 삼각형 꼭지점 3개 좌표
 void Fill_Triangel(u16 x0,u16 y0,u16 x1,u16 y1,u16 x2,u16 y2);
 void LCD_ShowChar(u16 x,u16 y,u16 fc, u16 bc, u8 num,u8 size,u8 mode);	// start x,y, font color, background color, ascii-code, font size, (0)overlying/(1)non-overlying
