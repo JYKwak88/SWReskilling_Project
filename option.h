@@ -43,3 +43,8 @@ enum _speed{back2=-2, back=-1, stop=0, one, two, three, four, five};
 #define FRONT_LIMIT (200)
 #define REAR_LIMIT  (150)
 #define CALC_DIST_LIMIT (3000)
+
+// buzzer.c
+#define TIM1_FREQ 	  		(8000000) 	      	// Hz
+#define TIM1_TICK	  		(1000000/TIM1_FREQ)	// usec
+#define TIM1_PLS_OF_1ms  	(1000/TIM1_TICK)

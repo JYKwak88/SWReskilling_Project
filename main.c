@@ -46,6 +46,8 @@ void Main(void)
 	DIRECTION = center;
 	SPEED = stop;
 
+	Buzzer_Init();
+
 #if (!DEV)
 	Wait_Bluetooth_Connect();
 #endif
@@ -167,6 +169,7 @@ void Main(void)
     		else if (DIRECTION == -1) L_LED_INVERT;
     		else if (DIRECTION == 1) R_LED_INVERT;
 			Draw_Arrow();
+			if (DRIVE_STATUS == -1 || FRONT_DETECT || REAR_DETECT) Macro_Invert_Bit(TIM1->CR1, 0);
 			BLINK_CHANGED = 0;
 		}
 
@@ -181,6 +184,7 @@ void Main(void)
 				FRONT_DETECT = 1;
 				Uart_Printf("FRONT_DIST=%4dmm(%d)\n\r", FRONT_DISTANCE, FRONT_DETECT);
 				Draw_Frontsensor();
+				Buzzer_Changefreq(853);
 				if (DRIVE_STATUS == 1)
 				{
 					Drive_Car('0');
@@ -188,6 +192,7 @@ void Main(void)
 					Draw_Emergency();
 					Print_State_Uart();
 					LED_Control();
+					Buzzer_On();
 				}
 			}
 			else if (FRONT_DETECT == 1 && FRONT_DISTANCE > FRONT_LIMIT*1.2)
@@ -195,6 +200,8 @@ void Main(void)
 				FRONT_DETECT = 0;
 				Uart_Printf("FRONT_DIST=%4dmm(%d)\n\r", FRONT_DISTANCE, FRONT_DETECT);
 				Draw_Frontsensor();
+				Buzzer_Changefreq(440);
+				if (DRIVE_STATUS != -1) Buzzer_Off();
 			}
 		}
 		if (REAR_CAPTURED)
@@ -208,6 +215,7 @@ void Main(void)
 				REAR_DETECT = 1;
 				Uart_Printf("REAR_DIST=%4dmm(%d)\n\r", REAR_DISTANCE, REAR_DETECT);
 				Draw_Rearsensor();
+				Buzzer_Changefreq(853);
 				if (DRIVE_STATUS == -1)
 				{
 					Drive_Car('0');
@@ -215,6 +223,7 @@ void Main(void)
 					Draw_Emergency();
 					Print_State_Uart();
 					LED_Control();
+					Buzzer_On();
 				}
 			}
 			else if (REAR_DETECT == 1 && REAR_DISTANCE > REAR_LIMIT*1.2)
@@ -222,6 +231,8 @@ void Main(void)
 				REAR_DETECT = 0;
 				Uart_Printf("REAR_DIST=%4dmm(%d)\n\r", REAR_DISTANCE, REAR_DETECT);
 				Draw_Rearsensor();
+				Buzzer_Changefreq(440);
+				if (DRIVE_STATUS != -1) Buzzer_Off();
 			}
 		}
 	}

@@ -62,6 +62,7 @@ void Forward_Car(void)
     Motor_Drive(DIRECTION, SPEED);
     DRIVE_STATUS = 1;
     SEE_CENTER;
+    Buzzer_Off();
 }
 
 void Backward_Car(void)
@@ -71,6 +72,7 @@ void Backward_Car(void)
     SPEED = -1;
     Motor_Drive(DIRECTION, SPEED);
     DRIVE_STATUS = -1;
+    Buzzer_On();
 }
 
 void Stop_Car(void)
@@ -78,6 +80,7 @@ void Stop_Car(void)
     SPEED = 0;
     Motor_Drive(DIRECTION, SPEED);
     DRIVE_STATUS = 0;
+    Buzzer_Off();
 }
 
 void Turn_Car(u8 input)

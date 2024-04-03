@@ -219,3 +219,9 @@ void USONIC_TRIG_Init(void);
 void USONIC_ECHO_Init(void);
 u32 Calc_Dist_Front(void);
 u32 Calc_Dist_Rear(void);
+
+// buzzer.c
+void Buzzer_Init(void);
+void Buzzer_On(void);
+void Buzzer_Off(void);
+void Buzzer_Changefreq(u16 freq);
