@@ -50,8 +50,7 @@ void TailLED_Init(void)
 	TIM4->CR1 = (0<<7)|(1<<4)|(0<<3);
     // Timer 주파수가 TIM4_FREQ가 되도록 PSC 설정
 	TIM4->PSC = (unsigned int)(TIMXCLK/(double)TIM4_FREQ + 0.5) - 1;
-    // PWM 주기 2ms
-	// TIM4->ARR = TIM4_PLS_OF_10ms / 5 - 1;
+    // PWM 주기 20ms
     // define으로 계산
     TIM4->ARR = (TIM4_UE_PERIOD / TIM4_TICK) -1;
     // 초기 출력(low)은 duty 100% (서있으므로)

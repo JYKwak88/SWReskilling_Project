@@ -35,7 +35,6 @@ u32 FRONT_DISTANCE = 0;  // unit : mm
 u32 REAR_DISTANCE = 0;  // unit : mm
 u8 FRONT_DETECT = 0;
 u8 REAR_DETECT = 0;
-u8 SELF_DRIVE = 0;
 
 void Main(void)
 {
@@ -132,10 +131,6 @@ void Main(void)
 					Help_Message_Uart();
 					Screen_Init();
 					break;
-				case '7':
-					SELF_DRIVE ^= 1;
-					Uart_Printf("SELF_DRIVE = %d\n\r", SELF_DRIVE);
-					break;
 				default:
 					Uart_Printf("[%c] is Wrong Input\n\r", input);
     				Uart_Printf("Press 'H' key if you see the key guide\n\r");
@@ -195,7 +190,7 @@ void Main(void)
 					LED_Control();
 				}
 			}
-			else if (FRONT_DETECT == 1 && FRONT_DISTANCE > FRONT_LIMIT)
+			else if (FRONT_DETECT == 1 && FRONT_DISTANCE > FRONT_LIMIT*1.2)
 			{
 				FRONT_DETECT = 0;
 				Uart_Printf("FRONT_DIST=%4dmm(%d)\n\r", FRONT_DISTANCE, FRONT_DETECT);
@@ -222,15 +217,12 @@ void Main(void)
 					LED_Control();
 				}
 			}
-			else if (REAR_DETECT == 1 && REAR_DISTANCE > REAR_LIMIT)
+			else if (REAR_DETECT == 1 && REAR_DISTANCE > REAR_LIMIT*1.2)
 			{
 				REAR_DETECT = 0;
 				Uart_Printf("REAR_DIST=%4dmm(%d)\n\r", REAR_DISTANCE, REAR_DETECT);
 				Draw_Rearsensor();
 			}
 		}
-
-		if (SELF_DRIVE) Self_Driving();
 	}
-
 }
