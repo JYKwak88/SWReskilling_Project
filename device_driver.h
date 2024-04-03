@@ -217,6 +217,8 @@ extern const unsigned char Img_Wall[18];
 void Servo_Init(void);
 void USONIC_TRIG_Init(void);
 void USONIC_ECHO_Init(void);
+u32 Calc_Dist_Front(void);
+u32 Calc_Dist_Rear(void);
 
 // selfdriving.c
 void Self_Driving(void);

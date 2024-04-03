@@ -132,10 +132,10 @@ void Main(void)
 					Help_Message_Uart();
 					Screen_Init();
 					break;
-				// case '7':
-				// 	SELF_DRIVE ^= 1;
-				// 	Uart_Printf("SELF_DRIVE = %d\n\r", SELF_DRIVE);
-				// 	break;
+				case '7':
+					SELF_DRIVE ^= 1;
+					Uart_Printf("SELF_DRIVE = %d\n\r", SELF_DRIVE);
+					break;
 				default:
 					Uart_Printf("[%c] is Wrong Input\n\r", input);
     				Uart_Printf("Press 'H' key if you see the key guide\n\r");
@@ -178,8 +178,7 @@ void Main(void)
 		if (FRONT_CAPTURED)
 		{
 			FRONT_CAPTURED = 0;
-		    FRONT_DISTANCE = (FRONT_START_CCR - FRONT_END_CCR) * 1.7;  // 거리 계산
-			if (FRONT_DISTANCE < 0 || FRONT_DISTANCE > 3000) FRONT_DISTANCE = 3000;
+		    FRONT_DISTANCE = Calc_Dist_Front();  // 거리 계산
 			// Uart_Printf("FRONTDIST = %4d mm, REARDIST = %4d mm\n\r", FRONT_DISTANCE, REAR_DISTANCE);
 
 			if (FRONT_DETECT == 0 && FRONT_DISTANCE < FRONT_LIMIT)
@@ -206,8 +205,7 @@ void Main(void)
 		if (REAR_CAPTURED)
 		{
 			REAR_CAPTURED = 0;
-		    REAR_DISTANCE = (REAR_START_CCR - REAR_END_CCR) * 1.7;  // 거리 계산
-			if (REAR_DISTANCE < 0 || REAR_DISTANCE > 3000) REAR_DISTANCE = 3000;
+		    REAR_DISTANCE = Calc_Dist_Rear();  // 거리 계산
 			// Uart_Printf("FRONTDIST = %4d mm, REARDIST = %4d mm\n\r", FRONT_DISTANCE, REAR_DISTANCE);
 
 			if (REAR_DETECT == 0 && REAR_DISTANCE < REAR_LIMIT)
@@ -232,7 +230,7 @@ void Main(void)
 			}
 		}
 
-		// if (SELF_DRIVE) Self_Driving();
+		if (SELF_DRIVE) Self_Driving();
 	}
 
 }

@@ -42,3 +42,4 @@ enum _speed{back2=-2, back=-1, stop=0, one, two, three, four, five};
 
 #define FRONT_LIMIT (200)
 #define REAR_LIMIT  (150)
+#define CALC_DIST_LIMIT (3000)

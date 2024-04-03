@@ -71,3 +71,19 @@ void USONIC_ECHO_Init(void)
 	// TIM3 start
 	Macro_Set_Bit(TIM3->CR1, 0);
 }
+
+u32 Calc_Dist_Front(void)
+{
+    u32 dist;
+    dist = (FRONT_START_CCR - FRONT_END_CCR) * 1.7;
+    if (dist < 0 || dist > CALC_DIST_LIMIT) dist = CALC_DIST_LIMIT;
+    return dist;
+}
+
+u32 Calc_Dist_Rear(void)
+{
+    u32 dist;
+    dist = (REAR_START_CCR - REAR_END_CCR) * 1.7;
+    if (dist < 0 || dist > CALC_DIST_LIMIT) dist = CALC_DIST_LIMIT;
+    return dist;
+}
