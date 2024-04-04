@@ -5,7 +5,11 @@ static void Sys_Init(void)
 	Clock_Init();
 	Uart1_Init(115200);
 
+#if (DEV)
 	SCB->VTOR = 0x08003000;
+#else
+	SCB->VTOR = 0x08000000;
+#endif
 	SCB->SHCSR = 0;
 
 	// Init 순서 유지할 것
@@ -20,6 +24,8 @@ static void Sys_Init(void)
 	USONIC_ECHO_Init();
 
 	LCD_Init();
+
+	Buzzer_Init();
 }
 
 enum _status DRIVE_STATUS = idle;
@@ -45,8 +51,6 @@ void Main(void)
 	DRIVE_STATUS = idle;
 	DIRECTION = center;
 	SPEED = stop;
-
-	Buzzer_Init();
 
 #if (!DEV)
 	Wait_Bluetooth_Connect();
@@ -169,7 +173,8 @@ void Main(void)
     		else if (DIRECTION == -1) L_LED_INVERT;
     		else if (DIRECTION == 1) R_LED_INVERT;
 			Draw_Arrow();
-			if (DRIVE_STATUS == -1 || FRONT_DETECT || REAR_DETECT) Macro_Invert_Bit(TIM1->CR1, 0);
+			if (DRIVE_STATUS == -1 || (EMERGENCY && (FRONT_DETECT || REAR_DETECT))) Macro_Invert_Bit(TIM1->CR1, 0);
+			else Buzzer_Off();
 			BLINK_CHANGED = 0;
 		}
 
